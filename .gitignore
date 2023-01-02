@@ -63,3 +63,9 @@ MajorProject/Assets/Photon/
 
 # Library??
 MajorProject/Library/
+
+#Logs??
+MajorProject/Logs/
+
+# TextMeshPro stuff
+MajorProject/Assets/TextMesh Pro/

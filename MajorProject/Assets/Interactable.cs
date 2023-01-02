@@ -3,30 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
-public class Interactable : MonoBehaviour
+public class Interactable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    // Start is called before the first frame update
-    void Start()
+    // Fires when the player starts dragging the object
+    public void OnBeginDrag(PointerEventData eventData)
     {
-        
+        Debug.Log("Begin Drag");
     }
-
-    // Update is called once per frame
-    void Update()
+    
+    // Fires when the player is dragging the object
+    public void OnDrag(PointerEventData eventData)
     {
-        
+        Debug.Log("Drag");
+        // Move the object to the mouse position
+        this.transform.position = eventData.position;
     }
-
-    private void OnMouseDown()
+    
+    // Fires when the player stops dragging the object
+    public void OnEndDrag(PointerEventData eventData)
     {
-        
-    }
-
-    // Drag gameObject with mouse
-    public void OnMouseDrag(InputAction.CallbackContext context)
-    {
-        transform.position = context.ReadValue<Vector2>();
+        Debug.Log("End Drag");
     }
 }
 
