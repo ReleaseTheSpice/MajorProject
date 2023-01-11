@@ -5,8 +5,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 
-public class Interactable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
+    [SerializeField] private Canvas canvas;
+    private RectTransform rectTransform;
+    
+    private void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+    }
+
     // Fires when the player starts dragging the object
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -17,14 +25,25 @@ public class Interactable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     public void OnDrag(PointerEventData eventData)
     {
         Debug.Log("Drag");
-        // Move the object to the mouse position
-        this.transform.position = eventData.position;
+        // eventData.delta is the amount the mouse has moved since the last OnDrag event
+        // divide by the canvas scale factor so the mouse movement is the same as screen movement
+        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
     
     // Fires when the player stops dragging the object
     public void OnEndDrag(PointerEventData eventData)
     {
         Debug.Log("End Drag");
+    }
+    
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        Debug.Log("OnPointerDown");
+    }
+    
+    public void OnDrop(PointerEventData eventData)
+    {
+        Debug.Log("OnDrop");
     }
 }
 
