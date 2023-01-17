@@ -9,10 +9,18 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
 {
     [SerializeField] private Canvas canvas;
     private RectTransform rectTransform;
+    public Vector2 homePosition;
+    // ^ Maybe this shouldnt be serializable/public?
     
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
+        homePosition = rectTransform.anchoredPosition;
+    }
+    
+    private void ReturnHome()
+    {
+        rectTransform.anchoredPosition = homePosition;
     }
 
     // Fires when the player starts dragging the object
@@ -26,7 +34,7 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     {
         Debug.Log("Drag");
         // eventData.delta is the amount the mouse has moved since the last OnDrag event
-        // divide by the canvas scale factor so the mouse movement is the same as screen movement
+        // divide by the canvas scale factor so the mouse distance is the same as screen distance
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
     
@@ -44,6 +52,21 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     public void OnDrop(PointerEventData eventData)
     {
         Debug.Log("OnDrop");
+        RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(eventData.position), Vector2.zero);
+        if (hit.collider != null && hit.collider.gameObject.CompareTag("DropZone"))
+        {
+            // Debug.Log("Hit " + hit.collider.name);
+            Debug.Log("Hit DropZone");
+            transform.SetParent(hit.transform);
+            homePosition = hit.collider.gameObject.GetComponent<RectTransform>().anchoredPosition;
+            ReturnHome();
+            // Then call some function on the stack to add the card object to it and also give it a sprite renderer so it can show up in world space
+        }
+        else
+        {
+            Debug.Log("Hit Nothing");
+            ReturnHome();
+        }
     }
 }
 

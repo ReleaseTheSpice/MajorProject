@@ -69,3 +69,6 @@ MajorProject/Logs/
 
 # TextMeshPro stuff
 MajorProject/Assets/TextMesh Pro/
+
+# More Temp files (I think the default doesnt work bc everything is in a MajorProject/ folder)
+MajorProject/Temp/
