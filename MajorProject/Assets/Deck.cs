@@ -10,7 +10,11 @@ public class Deck : MonoBehaviour, IPointerDownHandler
     
     [Header("References")]
     public Hand hand;
-    
+
+    public void Init(int i)
+    {
+        Debug.Log(i);
+    }
     public void OnPointerDown(PointerEventData eventData)
     {
         Debug.Log("OnPointerDown");

@@ -57,7 +57,9 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
         {
             // Debug.Log("Hit " + hit.collider.name);
             Debug.Log("Hit DropZone");
-            transform.SetParent(hit.transform);
+            // call stack to get what parent to add me to
+            Transform t = hit.collider.gameObject.GetComponent<Stack>().GetCanvasTransform();
+            transform.SetParent(t);
             homePosition = hit.collider.gameObject.GetComponent<RectTransform>().anchoredPosition;
             ReturnHome();
             // Then call some function on the stack to add the card object to it and also give it a sprite renderer so it can show up in world space
