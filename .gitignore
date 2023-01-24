@@ -59,7 +59,7 @@ sysinfo.txt
 crashlytics-build.properties
 
 # Photon stuff
-MajorProject/Assets/Photon/
+# MajorProject/Assets/Photon/
 
 # Library??
 MajorProject/Library/

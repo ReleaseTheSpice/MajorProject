@@ -12,13 +12,15 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     public Vector2 homePosition;
     // ^ Maybe this shouldnt be serializable/public?
     
+    public bool draggable = false;
+    
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         homePosition = rectTransform.anchoredPosition;
     }
     
-    private void ReturnHome()
+    public void ReturnHome()
     {
         rectTransform.anchoredPosition = homePosition;
     }
@@ -26,16 +28,20 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     // Fires when the player starts dragging the object
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log("Begin Drag");
+        // Debug.Log("Begin Drag");
     }
     
     // Fires when the player is dragging the object
     public void OnDrag(PointerEventData eventData)
     {
-        Debug.Log("Drag");
-        // eventData.delta is the amount the mouse has moved since the last OnDrag event
-        // divide by the canvas scale factor so the mouse distance is the same as screen distance
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        if (draggable)
+        {
+            // Debug.Log("Drag");
+            
+            // eventData.delta is the amount the mouse has moved since the last OnDrag event
+            // divide by the canvas scale factor so the mouse distance is the same as screen distance
+            rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        }
     }
     
     // Fires when the player stops dragging the object
@@ -51,24 +57,32 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     
     public void OnDrop(PointerEventData eventData)
     {
-        Debug.Log("OnDrop");
+        // Debug.Log("OnDrop");
         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(eventData.position), Vector2.zero);
         if (hit.collider != null && hit.collider.gameObject.CompareTag("DropZone"))
         {
-            // Debug.Log("Hit " + hit.collider.name);
             Debug.Log("Hit DropZone");
+            // Remove the card from the hand
+            // hand.RemoveCard(gameObject); HOW?????
+            
             // call stack to get what parent to add me to
             Transform t = hit.collider.gameObject.GetComponent<Stack>().GetCanvasTransform();
             transform.SetParent(t);
+            updateCanvas(hit.collider.gameObject.GetComponentInChildren<Canvas>());
             homePosition = hit.collider.gameObject.GetComponent<RectTransform>().anchoredPosition;
             ReturnHome();
-            // Then call some function on the stack to add the card object to it and also give it a sprite renderer so it can show up in world space
+            // Then call some function on the stack to add the card object to it
         }
         else
         {
             Debug.Log("Hit Nothing");
             ReturnHome();
         }
+    }
+    
+    public void updateCanvas(Canvas c)
+    {
+        canvas = c;
     }
 }
 
