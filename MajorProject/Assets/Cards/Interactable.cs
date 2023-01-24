@@ -64,6 +64,7 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
             Debug.Log("Hit DropZone");
             // Remove the card from the hand
             // hand.RemoveCard(gameObject); HOW?????
+            gameObject.GetComponentInParent<Hand>().RemoveCard(gameObject);
             
             // call stack to get what parent to add me to
             Transform t = hit.collider.gameObject.GetComponent<Stack>().GetCanvasTransform();

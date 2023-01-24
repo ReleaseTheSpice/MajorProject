@@ -58,7 +58,7 @@ public class Hand : MonoBehaviour
             Vector3 newPos = new Vector3(i * 120 - 540, 0, 0);
             cards[i].transform.position = newPos;
             cards[i].GetComponent<Interactable>().homePosition = newPos;
-            //cards[i].GetComponent<Interactable>().ReturnHome();
+            cards[i].GetComponent<Interactable>().ReturnHome();
             availableSlots[i] = false;
         }
     }
