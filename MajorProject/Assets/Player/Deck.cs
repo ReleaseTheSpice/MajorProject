@@ -6,10 +6,11 @@ using UnityEngine.EventSystems;
 
 public class Deck : MonoBehaviour, IPointerDownHandler
 {
-    public List<Card> cards = new List<Card>();
+    public List<GameObject> cards = new List<GameObject>();
     
     [Header("References")]
-    public Hand hand;
+    public GameObject hand;
+    public List<GameObject> cardPrefabs;
 
     public void Init(int i)
     {
@@ -18,6 +19,7 @@ public class Deck : MonoBehaviour, IPointerDownHandler
     public void OnPointerDown(PointerEventData eventData)
     {
         Debug.Log("OnPointerDown");
+        DrawCard(1);
     }
     
     // Start is called before the first frame update
@@ -36,15 +38,20 @@ public class Deck : MonoBehaviour, IPointerDownHandler
     {
         foreach (int cardId in cardIds)
         {
-            // Card card = new Card(cardId);
-            // cards.Add(card);
+            // Instantiate the card with the correct ID
+            GameObject newCard = Instantiate(cardPrefabs[cardId], transform, false) as GameObject;
+            newCard.transform.Translate(0, 0, 1);
+            // Put it on the player canvas
+            newCard.GetComponent<Interactable>().updateCanvas(GetComponentInParent<Canvas>());
+            AddCard(newCard);
         }
     }
-    
+
     // Add a card to the bottom of the deck
-    public void AddCard(Card card)
+    public void AddCard(GameObject card)
     {
         cards.Add(card);
+        card.transform.SetParent(transform);
     }
     
     // Remove a card from the top of the deck and add it to the hand
@@ -54,9 +61,10 @@ public class Deck : MonoBehaviour, IPointerDownHandler
         {
             if (cards.Count > 0)
             {
-                Card card = cards[0];
+                GameObject topCard = cards[0];
+                // Check if hand is full?  This implementation "burns" cards if the hand is full
                 cards.RemoveAt(0);
-                hand.AddCard(card);
+                hand.GetComponent<Hand>().AddCard(topCard);
             }
         }
     }
