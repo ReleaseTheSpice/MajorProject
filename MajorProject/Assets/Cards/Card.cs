@@ -9,8 +9,9 @@ public class Card : MonoBehaviour
     public string cardName;
     public int cardID;
     public string cardDescription;
-    
-    [Header("References")]
+
+    [Header("References")] 
+    public GameObject owner;
     public GameObject cardNameText;
     public GameObject cardDescriptionText;
     

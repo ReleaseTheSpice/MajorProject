@@ -4,13 +4,29 @@ using UnityEngine;
 
 public class Stack : MonoBehaviour
 {
-    public Transform canvasTransform;
+    public List<GameObject> cards;
+    
+    [Header("References")]
+    public GameObject owner;    // Reference to the player GameObject that the stack belongs to
+    public Transform canvasTransform;   // Reference to this stack's Canvas
+
+    #region Card Functions
+
+    public void AddCard(GameObject card)
+    {
+        Debug.Log("Adding card");
+        cards.Add(card);
+    }
+
+    #endregion
+    
     public Transform GetCanvasTransform()
     {
         return canvasTransform;
     }
-    
-    
+
+    #region Callback Handlers
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,4 +38,6 @@ public class Stack : MonoBehaviour
     {
         
     }
+
+    #endregion
 }

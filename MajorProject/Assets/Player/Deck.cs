@@ -6,16 +6,41 @@ using UnityEngine.EventSystems;
 
 public class Deck : MonoBehaviour, IPointerDownHandler
 {
-    public List<GameObject> cards = new List<GameObject>();
-    
+    public List<GameObject> cards;
+
     [Header("References")]
+    public GameObject player;
     public GameObject hand;
     public List<GameObject> cardPrefabs;
+    
+    #region Card Functions
 
-    public void Init(int i)
+    // Add a card to the bottom of the deck
+    public void AddCard(GameObject card)
     {
-        Debug.Log(i);
+        cards.Add(card);
+        card.transform.SetParent(transform);
     }
+    
+    // Remove a card from the top of the deck and add it to the hand
+    public void DrawCard(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            if (cards.Count > 0)
+            {
+                GameObject topCard = cards[0];
+                // Maybe Check if hand is full?  This implementation "burns" cards if the hand is full
+                cards.RemoveAt(0);
+                hand.GetComponent<Hand>().AddCard(topCard);
+            }
+        }
+    }
+
+    #endregion
+    
+    #region Callback Handlers
+
     public void OnPointerDown(PointerEventData eventData)
     {
         Debug.Log("OnPointerDown");
@@ -33,6 +58,8 @@ public class Deck : MonoBehaviour, IPointerDownHandler
     {
         
     }
+
+    #endregion
     
     public void GenerateDeck(List<int> cardIds)
     {
@@ -47,25 +74,5 @@ public class Deck : MonoBehaviour, IPointerDownHandler
         }
     }
 
-    // Add a card to the bottom of the deck
-    public void AddCard(GameObject card)
-    {
-        cards.Add(card);
-        card.transform.SetParent(transform);
-    }
     
-    // Remove a card from the top of the deck and add it to the hand
-    public void DrawCard(int amount)
-    {
-        for (int i = 0; i < amount; i++)
-        {
-            if (cards.Count > 0)
-            {
-                GameObject topCard = cards[0];
-                // Check if hand is full?  This implementation "burns" cards if the hand is full
-                cards.RemoveAt(0);
-                hand.GetComponent<Hand>().AddCard(topCard);
-            }
-        }
-    }
 }

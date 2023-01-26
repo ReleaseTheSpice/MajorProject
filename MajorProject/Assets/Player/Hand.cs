@@ -5,21 +5,10 @@ using UnityEngine;
 
 public class Hand : MonoBehaviour
 {
-    public List<GameObject> cards = new List<GameObject>();
-    //public Transform[] cardSlots;
+    public List<GameObject> cards;
     public bool[] availableSlots;
     
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    #region Card Functions
     
     public void AddCard(GameObject card)
     {
@@ -56,10 +45,26 @@ public class Hand : MonoBehaviour
         {
             //cards[i].transform.position = cardSlots[i].transform.position;
             Vector3 newPos = new Vector3(i * 120 - 540, 0, 0);
-            cards[i].transform.position = newPos;
+            cards[i].transform.position = newPos; // Move cards to z=0 so they are visible
             cards[i].GetComponent<Interactable>().homePosition = newPos;
             cards[i].GetComponent<Interactable>().ReturnHome();
             availableSlots[i] = false;
         }
     }
+    
+    #endregion
+    
+    #region Callback Handlers
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+    #endregion
 }
