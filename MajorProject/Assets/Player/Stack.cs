@@ -34,10 +34,11 @@ public class Stack : MonoBehaviour
     private bool damageDoubler = false;
     private bool goToHand = false;
     private bool preventCardDraw = false;
-    
-    // Variables to keep track of life
-    private int lifeChange = 0;
-    
+    private bool lostLifeThisRound = false;
+    private bool gainedLifeThisRound = false;
+    private bool drawnCardsThisRound = false;
+
+    // Resolve the effects of all cards on the stack, most recent first, and return them to their original owners
     public void ResolveEffects()
     {
         Debug.Log("Resolving effects");
@@ -53,11 +54,12 @@ public class Stack : MonoBehaviour
             return;
         }
         
+        // Loop through the cards in reverse order
         for (int i = cards.Count - 1; i >= 0; i--)
         {
             if (!counterNextCard)
             {
-                // Trigger the effect
+                // Trigger the effect (cardEffects have the same indexes as cards)
                 cardEffects[i].DynamicInvoke();
             }
             else
@@ -85,6 +87,12 @@ public class Stack : MonoBehaviour
         // Clear the stack
         cards.Clear();
         cardEffects.Clear();
+    }
+
+    // Reset all card effect variables to their default values
+    private void ResetVariables()
+    {
+        counterNextCard = false;
     }
 
     #endregion
@@ -166,20 +174,54 @@ public class Stack : MonoBehaviour
     {
         preventCardDraw = true;
     }
-    
-    // public void NopeAll()
-    // {
-    //     Debug.Log("Counter all cards");
-    //     counterNextCard = true;
-    //     counterAllCards = true;
-    // }
 
-    // Card ID: 12
+    // Card ID: 11
     public void Wither()
     {
         DrawCards(2);
         int cardsInHand = owner.GetComponent<Hand>().cards.Count;
         LoseLife(cardsInHand);
+    }
+    
+    // Card ID: 12
+    public void Cull()
+    {
+        // If you haven't gained life this round, lose 5 life
+        if (!gainedLifeThisRound)
+        {
+            LoseLife(5);
+        }
+    }
+    
+    // Card ID: 13
+    public void Infestation()
+    {
+        // Lose 2 life for each card on the stack
+        LoseLife(cards.Count * 2);
+    }
+    
+    // Card ID: 14
+    public void Hoard()
+    {
+        // Gain 2 life for each card on the stack
+        GainLife(cards.Count * 2);
+    }
+    
+    // Card ID: 15
+    public void FallenTree()
+    {
+        // If you've drawn cards this round, lose 7 life
+        if (drawnCardsThisRound)
+        {
+            
+        }
+        LoseLife(7);
+    }
+    
+    // Card ID: 24
+    public void SurpriseTrain()
+    {
+        counterAllCards = true;
     }
     
     #endregion
@@ -200,7 +242,7 @@ public class Stack : MonoBehaviour
                 lifeDoubler = false;
             }
             owner.life += amount;
-            lifeChange += amount;
+            gainedLifeThisRound = true;
         }
     }
     
@@ -218,7 +260,7 @@ public class Stack : MonoBehaviour
                 damageDoubler = false;
             }
             owner.life -= amount;
-            lifeChange -= amount;
+            lostLifeThisRound = true;
         }
     }
     
