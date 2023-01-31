@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -14,6 +15,14 @@ public class Card : MonoBehaviour
     public GameObject owner;
     public GameObject cardNameText;
     public GameObject cardDescriptionText;
+
+    public void AddEffect(Stack stack)
+    {
+        Delegate effect = Delegate.CreateDelegate(typeof(Action), stack, cardName);
+        stack.cardEffects.Add(effect);
+    }
+
+    #region Callback Handlers
     
     // Start is called before the first frame update
     void Start()
@@ -27,4 +36,7 @@ public class Card : MonoBehaviour
     {
         
     }
+    
+    #endregion
+    
 }

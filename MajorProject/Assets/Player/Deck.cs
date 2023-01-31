@@ -20,6 +20,10 @@ public class Deck : MonoBehaviour, IPointerDownHandler
     {
         cards.Add(card);
         card.transform.SetParent(transform);
+        card.GetComponent<Interactable>().homePosition = Vector3.zero;
+        card.GetComponent<Interactable>().ReturnHome();
+        // Shift the card to z=1 so it is behind the deck
+        // card.transform.position = new Vector3(card.transform.position.x, card.transform.position.y, -1);
     }
     
     // Remove a card from the top of the deck and add it to the hand
@@ -67,7 +71,10 @@ public class Deck : MonoBehaviour, IPointerDownHandler
         {
             // Instantiate the card with the correct ID
             GameObject newCard = Instantiate(cardPrefabs[cardId], transform, false) as GameObject;
+            // Shift the card to z=1 so it is behind the deck
             newCard.transform.Translate(0, 0, 1);
+            // Set the owner
+            newCard.GetComponent<Card>().owner = player;
             // Put it on the player canvas
             newCard.GetComponent<Interactable>().updateCanvas(GetComponentInParent<Canvas>());
             AddCard(newCard);

@@ -12,7 +12,7 @@ public class Hand : MonoBehaviour
     
     public void AddCard(GameObject card)
     {
-        Debug.Log("Adding card to hand");
+        Debug.Log("Adding card " + card.name + " to hand");
         for (int i = 0; i < availableSlots.Length; i++)
         {
             if (availableSlots[i]) // If this slot is available:
@@ -30,7 +30,7 @@ public class Hand : MonoBehaviour
     
     public void RemoveCard(GameObject card)
     {
-        Debug.Log("Removing card from hand");
+        Debug.Log("Removing card " + card.name + " from hand");
         int index = cards.IndexOf(card);
         cards.Remove(card);
         availableSlots[index] = true;

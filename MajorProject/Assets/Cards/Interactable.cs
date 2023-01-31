@@ -9,7 +9,7 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
 {
     [SerializeField] private Canvas canvas;
     private RectTransform rectTransform;
-    public Vector2 homePosition;
+    public Vector3 homePosition;
     // ^ Maybe this shouldnt be serializable/public?
     
     public bool draggable = false;
@@ -17,14 +17,16 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
-        homePosition = rectTransform.anchoredPosition;
+        homePosition = rectTransform.anchoredPosition3D;
     }
     
     public void ReturnHome()
     {
-        rectTransform.anchoredPosition = homePosition;
+        rectTransform.anchoredPosition3D = homePosition;
     }
 
+    #region Input Callbacks
+    
     // Fires when the player starts dragging the object
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -47,12 +49,12 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     // Fires when the player stops dragging the object
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("End Drag");
+        // Debug.Log("End Drag");
     }
     
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("OnPointerDown");
+        // Debug.Log("OnPointerDown");
     }
     
     public void OnDrop(PointerEventData eventData)
@@ -61,24 +63,30 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(eventData.position), Vector2.zero);
         if (hit.collider != null && hit.collider.gameObject.CompareTag("DropZone"))
         {
-            Debug.Log("Hit DropZone");
+            // Debug.Log(gameObject.name + "Hit DropZone");
             // Remove the card from the hand
             gameObject.GetComponentInParent<Hand>().RemoveCard(gameObject);
             
-            // call stack to get what parent to add me to
-            Transform t = hit.collider.gameObject.GetComponent<Stack>().GetCanvasTransform();
+            // Add me to the stack
+            Stack s = hit.collider.gameObject.GetComponent<Stack>();
+            Transform t = s.GetCanvasTransform();
             transform.SetParent(t);
             updateCanvas(hit.collider.gameObject.GetComponentInChildren<Canvas>());
             homePosition = hit.collider.gameObject.GetComponent<RectTransform>().anchoredPosition;
             ReturnHome();
+            
             // Then call some function on the stack to add the card object to it
+            s.AddCard(gameObject);
+            gameObject.GetComponent<Card>().AddEffect(s);
         }
         else
         {
-            Debug.Log("Hit Nothing");
+            // Debug.Log("Hit Nothing");
             ReturnHome();
         }
     }
+
+    #endregion
     
     public void updateCanvas(Canvas c)
     {
