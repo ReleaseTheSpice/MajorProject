@@ -213,9 +213,22 @@ public class Stack : MonoBehaviour
         // If you've drawn cards this round, lose 7 life
         if (drawnCardsThisRound)
         {
-            
+            LoseLife(7);
         }
-        LoseLife(7);
+    }
+    
+    // Card ID: 16
+    public void BigHands()
+    {
+        // Gain 1 life for each card in your hand
+        GainLife(owner.GetComponent<Hand>().cards.Count + 1);
+    }
+    
+    // Card ID: 17
+    public void SwiftEnd()
+    {
+        // If you have the end card, increase life lose this round by 3
+        //TODO: NEED END CARD FUNCTIONALITY
     }
     
     // Card ID: 24
