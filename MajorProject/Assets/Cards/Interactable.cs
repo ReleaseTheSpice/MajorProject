@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
@@ -59,30 +60,37 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     
     public void OnDrop(PointerEventData eventData)
     {
-        // Debug.Log("OnDrop");
+        Debug.Log(gameObject.name + " Dropped on " + eventData.pointerCurrentRaycast.gameObject.name);
         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(eventData.position), Vector2.zero);
-        if (hit.collider != null && hit.collider.gameObject.CompareTag("DropZone"))
+        if (gameObject.GetComponentInParent<Hand>() != null)
         {
-            // Debug.Log(gameObject.name + "Hit DropZone");
-            // Remove the card from the hand
-            gameObject.GetComponentInParent<Hand>().RemoveCard(gameObject);
-            
-            // Add me to the stack
-            Stack s = hit.collider.gameObject.GetComponent<Stack>();
-            Transform t = s.GetCanvasTransform();
-            transform.SetParent(t);
-            updateCanvas(hit.collider.gameObject.GetComponentInChildren<Canvas>());
-            homePosition = hit.collider.gameObject.GetComponent<RectTransform>().anchoredPosition;
-            ReturnHome();
-            
-            // Then call some function on the stack to add the card object to it
-            s.AddCard(gameObject);
-            gameObject.GetComponent<Card>().AddEffect(s);
-        }
-        else
-        {
-            // Debug.Log("Hit Nothing");
-            ReturnHome();
+            if (hit.collider != null && hit.collider.gameObject.CompareTag("DropZone"))
+            {
+                // Debug.Log(gameObject.name + "Hit DropZone");
+                // Remove the card from the hand
+                gameObject.GetComponentInParent<Hand>().RemoveCard(gameObject);
+
+                // Add me to the stack
+                Stack s = hit.collider.gameObject.GetComponent<Stack>();
+                Transform t = s.GetCanvasTransform();
+                transform.SetParent(t);//
+                updateCanvas(hit.collider.gameObject.GetComponentInChildren<Canvas>());
+                // homePosition = hit.collider.gameObject.GetComponent<RectTransform>().anchoredPosition;
+                // ReturnHome();
+                draggable = false;
+                // Disable the raycaster on the image so the card can't be dragged
+                // (raycastTarget is already disabled on other components of the card)
+                gameObject.GetComponent<Image>().raycastTarget = false;
+
+                // Then call some function on the stack to add the card object to it
+                gameObject.GetComponent<Card>().AddEffect(s);
+                s.AddCard(gameObject);
+            }
+            else
+            {
+                // Debug.Log("Hit Nothing");
+                ReturnHome();
+            }
         }
     }
 

@@ -20,6 +20,8 @@ public class Card : MonoBehaviour
     {
         Delegate effect = Delegate.CreateDelegate(typeof(Action), stack, cardName);
         stack.cardEffects.Add(effect);
+        // Delegate effect = Delegate.CreateDelegate(typeof(Action), stack, "doSeomthing");
+        // public delegate void effect(Player player);
     }
 
     #region Callback Handlers

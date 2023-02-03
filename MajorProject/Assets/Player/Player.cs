@@ -19,7 +19,7 @@ public class Player : MonoBehaviour
     {
         life = 20;
         
-        List<int> deckCode = new List<int>(){ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
+        List<int> deckCode = new List<int>(){ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
         myDeck.GetComponent<Deck>().GenerateDeck(deckCode);
     }
 

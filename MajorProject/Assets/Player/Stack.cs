@@ -19,6 +19,11 @@ public class Stack : MonoBehaviour
     public void AddCard(GameObject card)
     {
         Debug.Log("Adding card " + card.name + " to stack");
+        // card.transform.SetParent(transform);
+        // Set the home position to the stack (I have no idea why y=40)
+        Vector3 newPosition = new Vector3(transform.position.x, 40, 0);
+        card.GetComponent<Interactable>().homePosition = newPosition;
+        card.GetComponent<Interactable>().ReturnHome();
         cards.Add(card);
     }
 
@@ -77,6 +82,10 @@ public class Stack : MonoBehaviour
             }
             else
             {
+                // Add the interactable component back to the card
+                //TODO: Maybe destroy the card and just instantiate a new one in the deck
+                cards[i].AddComponent<Interactable>();
+                
                 // Return the card to its original owner
                 GameObject originalOwner = cards[i].GetComponent<Card>().owner;
                 // Call AddCard on the owner's deck

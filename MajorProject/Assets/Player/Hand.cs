@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Hand : MonoBehaviour
 {
@@ -17,15 +18,15 @@ public class Hand : MonoBehaviour
         {
             if (availableSlots[i]) // If this slot is available:
             {
-                card.GetComponent<Interactable>().draggable = true;
-                card.transform.SetParent(transform);
+                card.GetComponent<Interactable>().draggable = true; // Boolean to allow dragging
+                card.transform.SetParent(transform);                // Set the card's parent to this hand
+                card.GetComponent<Image>().raycastTarget = true;    // Allow raycasting so the card can receive OnDrag/drop callbacks
                 cards.Add(card);
                 updateCardPositions();
                 availableSlots[i] = false;
                 break;
             }
         }
-
     }
     
     public void RemoveCard(GameObject card)
