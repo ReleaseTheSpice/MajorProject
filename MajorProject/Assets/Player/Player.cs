@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Photon.Pun;
 
 public class Player : MonoBehaviour
 {
     public GameObject myDeck;
     public GameObject myHand;
-    public GameObject lifeText;
+    //public GameObject lifeText;
     
     public int life;
     
@@ -26,7 +27,13 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        lifeText.GetComponent<TextMeshProUGUI>().text = life.ToString();
+        // Need to have "using Photon.Pun;" at the top of the file
+        // if (photonView.IsMine == false && PhotonNetwork.IsConnected == true)
+        // {
+        //     return;
+        // }
+
+        //lifeText.GetComponent<TextMeshProUGUI>().text = life.ToString();
     }
     
     #endregion

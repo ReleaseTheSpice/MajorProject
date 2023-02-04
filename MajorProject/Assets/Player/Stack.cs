@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Stack : MonoBehaviour
@@ -10,8 +11,9 @@ public class Stack : MonoBehaviour
     public List<Delegate> cardEffects;
     
     [Header("References")]
-    //public GameObject owner;    // Reference to the player GameObject that the stack belongs to (not used)
-    public Player owner;       // Reference to the player script that the stack belongs to
+    //public GameObject owner;      // Reference to the player GameObject that the stack belongs to (not used)
+    public Player owner;            // Reference to the player script that the stack belongs to
+    public GameObject lifeText;     // Reference to the player's life text
     public Transform canvasTransform;   // Reference to this stack's Canvas
 
     #region Card Functions
@@ -316,7 +318,7 @@ public class Stack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        lifeText.GetComponent<TextMeshProUGUI>().text = owner.life.ToString();
     }
 
     #endregion
