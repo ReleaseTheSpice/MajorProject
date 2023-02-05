@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ public class Stack : MonoBehaviour
     //public GameObject owner;      // Reference to the player GameObject that the stack belongs to (not used)
     public Player owner;            // Reference to the player script that the stack belongs to
     public GameObject lifeText;     // Reference to the player's life text
+    public TextMeshProUGUI nameText;    // Reference to the player's name text
     public Transform canvasTransform;   // Reference to this stack's Canvas
 
     #region Card Functions
@@ -23,7 +25,7 @@ public class Stack : MonoBehaviour
         Debug.Log("Adding card " + card.name + " to stack");
         // card.transform.SetParent(transform);
         // Set the home position to the stack (I have no idea why y=40)
-        Vector3 newPosition = new Vector3(transform.position.x, 40, 0);
+        Vector3 newPosition = new Vector3(0, 40, 0);
         card.GetComponent<Interactable>().homePosition = newPosition;
         card.GetComponent<Interactable>().ReturnHome();
         cards.Add(card);
@@ -313,6 +315,12 @@ public class Stack : MonoBehaviour
     void Start()
     {
         cardEffects = new List<Delegate>();
+        nameText.text = owner.playerName;
+    }
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
     }
 
     // Update is called once per frame

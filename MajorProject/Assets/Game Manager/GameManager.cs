@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +10,25 @@ using Photon.Realtime;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
+    #region Public Fields
+
+    public GameObject playerPrefab;
+    public GameObject stackPrefab;
+    // Network manager prefab to handle things synchronously
+    public GameObject networkManager; 
+    
+    // "Static" makes it so you can simply do GameManager.Instance.xxx() from anywhere in your code
+    // Reuse this later??
+    public static GameManager Instance;
+    
+    #endregion
+    
+    #region Private Fields
+    
+    private NetworkManager _networkManager;
+    
+    #endregion
+    
     #region Photon Callbacks
 
     public override void OnLeftRoom()
@@ -41,6 +62,52 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     #endregion
 
+    #region MonoBehaviour Callbacks
+
+    private void Start()
+    {
+        if (networkManager != null)
+        {
+            GameObject netMan = PhotonNetwork.Instantiate(networkManager.name, Vector3.zero, Quaternion.identity, 0);
+            _networkManager = netMan.GetComponent<NetworkManager>();
+        }
+        else
+        {
+            Debug.LogError("Missing networkManager Reference. Please set it up in GameObject 'Game Manager'", this);
+        }
+
+        Instance = this;
+        
+        if (playerPrefab == null)
+        {
+            Debug.LogError("Missing playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
+        }
+        else
+        {
+            if (Player.LocalPlayerInstance == null)
+            {
+                Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+                GameObject p = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
+                p.GetComponentInChildren<Canvas>().worldCamera = Camera.main;
+                // RPC calls are only sent to other instances of the same prefab
+                _networkManager.PV.RPC("SetPlayerName", RpcTarget.AllBuffered, p.GetComponent<PhotonView>().ViewID, PhotonNetwork.NickName);
+
+                GameObject s = PhotonNetwork.Instantiate(this.stackPrefab.name, new Vector3(0f, 230f, 0f), Quaternion.identity, 0);
+                s.GetComponent<Stack>().owner = p.GetComponent<Player>();
+                //Debug.Log(_networkManager.PV.ViewID);
+                s.transform.position = GetNewStackPosition(_networkManager.PV.ViewID);
+                _networkManager.PV.RPC("SetStackOwner", RpcTarget.AllBuffered, s.GetComponent<PhotonView>().ViewID, p.GetComponent<PhotonView>().ViewID);
+            }
+            else
+            {
+                Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
+            }
+        }
+    }
+
+    #endregion
+    
     #region Public Methods
 
     // Wrapping the photon LeaveRoom in a public method for abstraction
@@ -61,7 +128,36 @@ public class GameManager : MonoBehaviourPunCallbacks
             Debug.LogError("PhotonNetwork: Trying to Load a level but we are not the master Client");
         }
         Debug.LogFormat("PhotonNetwork: Loading Level: {0}", PhotonNetwork.CurrentRoom.PlayerCount);
-        PhotonNetwork.LoadLevel("Room for " + PhotonNetwork.CurrentRoom.PlayerCount);
+        //PhotonNetwork.LoadLevel("Room for " + PhotonNetwork.CurrentRoom.PlayerCount);
+        //PhotonNetwork.LoadLevel("Room for 2");
+    }
+
+    private Vector3 GetNewStackPosition(int ID)
+    {
+        int identifier = (int)Math.Floor(ID / 1000f) - 1;
+        Debug.Log("ID: " + identifier);
+
+        float x;
+        if (identifier%2 == 0)
+        {
+            x = (float)Math.Ceiling(identifier/2f) * 400f;
+        }
+        else
+        {
+            x = (float)Math.Ceiling(identifier/2f) * -400f;
+        }
+        return new Vector3(x, 230f, 0f);
+
+        // switch (identifier)
+        // {
+        //     case 1:
+        //         return new Vector3(0f, 230f, 0f);
+        //     case 2:
+        //         return new Vector3(-400f, 230f, 0f);
+        //     case 3:
+        //         return new Vector3(400f, 230f, 0f);
+        // }
+        // return new Vector3(0f, 230f, 0f);
     }
 
     #endregion

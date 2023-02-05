@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ExitGames.Client.Photon;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Photon.Pun;
 
 public class Deck : MonoBehaviour, IPointerDownHandler
 {
@@ -70,7 +71,9 @@ public class Deck : MonoBehaviour, IPointerDownHandler
         foreach (int cardId in cardIds)
         {
             // Instantiate the card with the correct ID
-            GameObject newCard = Instantiate(cardPrefabs[cardId], transform, false) as GameObject;
+            //TODO: use PhotonNetwork.Instantiate so cards are synced across clients
+            //GameObject newCard = Instantiate(cardPrefabs[cardId], transform, false) as GameObject;
+            GameObject newCard = PhotonNetwork.Instantiate(cardPrefabs[cardId].name, transform.position, Quaternion.identity);
             // Shift the card to z=1 so it is behind the deck
             newCard.transform.Translate(0, 0, 1);
             // Set the owner

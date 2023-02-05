@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -6,12 +7,18 @@ using Photon.Pun;
 
 public class Player : MonoBehaviour
 {
+    #region Public Fields
+
     public GameObject myDeck;
     public GameObject myHand;
-    //public GameObject lifeText;
+    
+    [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
+    public static GameObject LocalPlayerInstance;
     
     public int life;
+    public string playerName;
     
+    #endregion
 
     #region Callback Handlers
 
@@ -24,6 +31,19 @@ public class Player : MonoBehaviour
         myDeck.GetComponent<Deck>().GenerateDeck(deckCode);
     }
 
+    private void Awake()
+    {
+        // #Important
+        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+        if (PhotonView.Get(this).IsMine)
+        {
+            Player.LocalPlayerInstance = this.gameObject;
+        }
+        // #Critical
+        // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -32,10 +52,20 @@ public class Player : MonoBehaviour
         // {
         //     return;
         // }
+        if (life <= 0)
+        {
+            Debug.Log("You lose!");
+            GameManager.Instance.LeaveRoom();
+        }
 
         //lifeText.GetComponent<TextMeshProUGUI>().text = life.ToString();
     }
     
     #endregion
-    
+
+    #region Public Methods
+
+
+
+    #endregion
 }
