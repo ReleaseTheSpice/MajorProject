@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -14,18 +15,20 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public GameObject playerPrefab;
     public GameObject stackPrefab;
+    public GameObject cardPrefab;
     // Network manager prefab to handle things synchronously
-    public GameObject networkManager; 
+    public GameObject networkManagerObj; 
     
     // "Static" makes it so you can simply do GameManager.Instance.xxx() from anywhere in your code
     // Reuse this later??
     public static GameManager Instance;
+    // Reference to this instance's NetworkManager script
+    public static NetworkManager NetworkManager;
     
     #endregion
     
     #region Private Fields
     
-    private NetworkManager _networkManager;
     
     #endregion
     
@@ -66,10 +69,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        if (networkManager != null)
+        if (networkManagerObj != null)
         {
-            GameObject netMan = PhotonNetwork.Instantiate(networkManager.name, Vector3.zero, Quaternion.identity, 0);
-            _networkManager = netMan.GetComponent<NetworkManager>();
+            GameObject netMan = PhotonNetwork.Instantiate(networkManagerObj.name, Vector3.zero, Quaternion.identity, 0);
+            NetworkManager = netMan.GetComponent<NetworkManager>();
         }
         else
         {
@@ -91,13 +94,14 @@ public class GameManager : MonoBehaviourPunCallbacks
                 GameObject p = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
                 p.GetComponentInChildren<Canvas>().worldCamera = Camera.main;
                 // RPC calls are only sent to other instances of the same prefab
-                _networkManager.PV.RPC("SetPlayerName", RpcTarget.AllBuffered, p.GetComponent<PhotonView>().ViewID, PhotonNetwork.NickName);
+                NetworkManager.PV.RPC("SetPlayerName", RpcTarget.AllBuffered, p.GetComponent<PhotonView>().ViewID, PhotonNetwork.NickName);
 
+                // Instantiate a stack for the local player
                 GameObject s = PhotonNetwork.Instantiate(this.stackPrefab.name, new Vector3(0f, 230f, 0f), Quaternion.identity, 0);
                 s.GetComponent<Stack>().owner = p.GetComponent<Player>();
-                //Debug.Log(_networkManager.PV.ViewID);
-                s.transform.position = GetNewStackPosition(_networkManager.PV.ViewID);
-                _networkManager.PV.RPC("SetStackOwner", RpcTarget.AllBuffered, s.GetComponent<PhotonView>().ViewID, p.GetComponent<PhotonView>().ViewID);
+                s.transform.position = GetNewStackPosition(NetworkManager.PV.ViewID);
+                NetworkManager.PV.RPC("SetStackOwner", RpcTarget.AllBuffered, s.GetComponent<PhotonView>().ViewID, p.GetComponent<PhotonView>().ViewID);
+
             }
             else
             {

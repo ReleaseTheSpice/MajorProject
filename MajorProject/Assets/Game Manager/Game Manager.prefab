@@ -46,4 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 2844111860142327458, guid: 850c433b3ce920c46be87ff09b0ec68f, type: 3}
   stackPrefab: {fileID: 5037619567122059557, guid: 98b5e8bb9b486cd4489ca9d551686813, type: 3}
-  networkManager: {fileID: 1082717645048033280, guid: 729a4c7145718de489b66692fb26fa22, type: 3}
+  cardPrefab: {fileID: 7543406616448813512, guid: 85b9666532951374899d4ccd949a906f, type: 3}
+  networkManagerObj: {fileID: 1082717645048033280, guid: 729a4c7145718de489b66692fb26fa22, type: 3}

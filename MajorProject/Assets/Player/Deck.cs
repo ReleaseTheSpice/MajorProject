@@ -71,8 +71,6 @@ public class Deck : MonoBehaviour, IPointerDownHandler
         foreach (int cardId in cardIds)
         {
             // Instantiate the card with the correct ID
-            //TODO: use PhotonNetwork.Instantiate so cards are synced across clients
-            //GameObject newCard = Instantiate(cardPrefabs[cardId], transform, false) as GameObject;
             GameObject newCard = PhotonNetwork.Instantiate(cardPrefabs[cardId].name, transform.position, Quaternion.identity);
             // Shift the card to z=1 so it is behind the deck
             newCard.transform.Translate(0, 0, 1);
