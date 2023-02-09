@@ -5,7 +5,7 @@ using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
-public class Stack : MonoBehaviour
+public class Stack : MonoBehaviour, IPunObservable
 {
     public List<GameObject> cards;
     
@@ -18,6 +18,34 @@ public class Stack : MonoBehaviour
     public TextMeshProUGUI nameText;    // Reference to the player's name text
     public Transform canvasTransform;   // Reference to this stack's Canvas
 
+    #region Photon
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // We own this player: send the others our data
+            // stream.SendNext(cards);
+            // stream.SendNext(cardEffects);
+            // stream.SendNext(owner);
+            // stream.SendNext(lifeText);
+            // stream.SendNext(nameText);
+            // stream.SendNext(canvasTransform);
+        }
+        else
+        {
+            // Network player, receive data
+            // cards = (List<GameObject>) stream.ReceiveNext();
+            // cardEffects = (List<Delegate>) stream.ReceiveNext();
+            // owner = (Player) stream.ReceiveNext();
+            // lifeText = (GameObject) stream.ReceiveNext();
+            // nameText = (TextMeshProUGUI) stream.ReceiveNext();
+            // canvasTransform = (Transform) stream.ReceiveNext();
+        }
+    }
+
+    #endregion
+    
     #region Card Functions
 
     public void AddCard(GameObject card)
@@ -96,7 +124,10 @@ public class Stack : MonoBehaviour
                 originalOwner.GetComponentInChildren<Deck>().AddCard(cards[i]);
             }
         }
-        
+        // Photon RPC to update the life text
+        GameManager.NetworkManager.PV.RPC("SetPlayerLife", RpcTarget.All, 
+            owner.gameObject.GetComponent<PhotonView>().ViewID, owner.life);
+
         // Clear the stack
         cards.Clear();
         cardEffects.Clear();

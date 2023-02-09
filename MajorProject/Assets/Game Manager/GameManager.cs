@@ -89,18 +89,23 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             if (Player.LocalPlayerInstance == null)
             {
+                // Instantiate the Player
                 Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
                 // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-                GameObject p = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
+                GameObject p = PhotonNetwork.Instantiate(
+                    this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
                 p.GetComponentInChildren<Canvas>().worldCamera = Camera.main;
                 // RPC calls are only sent to other instances of the same prefab
-                NetworkManager.PV.RPC("SetPlayerName", RpcTarget.AllBuffered, p.GetComponent<PhotonView>().ViewID, PhotonNetwork.NickName);
+                NetworkManager.PV.RPC("SetPlayerName", RpcTarget.AllBuffered, 
+                    p.GetComponent<PhotonView>().ViewID, PhotonNetwork.NickName);
 
-                // Instantiate a stack for the local player
-                GameObject s = PhotonNetwork.Instantiate(this.stackPrefab.name, new Vector3(0f, 230f, 0f), Quaternion.identity, 0);
+                // Instantiate a Stack for the local player
+                GameObject s = PhotonNetwork.Instantiate(
+                    this.stackPrefab.name, new Vector3(0f, 230f, 0f), Quaternion.identity, 0);
                 s.GetComponent<Stack>().owner = p.GetComponent<Player>();
                 s.transform.position = GetNewStackPosition(NetworkManager.PV.ViewID);
-                NetworkManager.PV.RPC("SetStackOwner", RpcTarget.AllBuffered, s.GetComponent<PhotonView>().ViewID, p.GetComponent<PhotonView>().ViewID);
+                NetworkManager.PV.RPC("SetStackOwner", RpcTarget.AllBuffered, 
+                    s.GetComponent<PhotonView>().ViewID, p.GetComponent<PhotonView>().ViewID);
 
             }
             else

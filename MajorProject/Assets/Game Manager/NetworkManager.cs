@@ -49,5 +49,11 @@ public class NetworkManager : MonoBehaviour
         PhotonView.Find(viewID).GetComponent<Stack>().owner = PhotonView.Find(ownerID).GetComponent<Player>();
     }
     
+    [PunRPC]
+    public void SetPlayerLife(int viewID, int life)
+    {
+        PhotonView.Find(viewID).GetComponent<Player>().life = life;
+    }
+    
     #endregion
 }
