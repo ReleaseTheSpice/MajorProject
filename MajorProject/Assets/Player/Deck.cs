@@ -71,16 +71,24 @@ public class Deck : MonoBehaviour, IPointerDownHandler
         foreach (int cardId in cardIds)
         {
             // Instantiate the card with the correct ID
-            GameObject newCard = PhotonNetwork.Instantiate(cardPrefabs[cardId].name, transform.position, Quaternion.identity);
-            // Shift the card to z=1 so it is behind the deck
-            newCard.transform.Translate(0, 0, 1);
-            // Set the owner
-            newCard.GetComponent<Card>().owner = player;
-            // Put it on the player canvas
-            newCard.GetComponent<Interactable>().updateCanvas(GetComponentInParent<Canvas>());
+            //GameObject newCard = PhotonNetwork.Instantiate(cardPrefabs[cardId].name, transform.position, Quaternion.identity);
+            GameObject newCard = InstantiateNewCard(cardPrefabs[cardId]);
             AddCard(newCard);
         }
     }
 
-    
+    // Helper function to instantiate a card and return it
+    public GameObject InstantiateNewCard(GameObject card)
+    {
+        GameObject newCard = Instantiate(card, transform.position, Quaternion.identity);
+        // Rename the card to not include (Clone)
+        newCard.name = card.name;
+        // Shift the card to z=1 so it is behind the deck
+        newCard.transform.Translate(0, 0, 1);
+        // Set the owner
+        newCard.GetComponent<Card>().owner = player;
+        // Put it on the player canvas
+        newCard.GetComponent<Interactable>().updateCanvas(GetComponentInParent<Canvas>());
+        return newCard;
+    }
 }

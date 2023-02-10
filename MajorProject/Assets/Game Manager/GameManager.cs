@@ -87,6 +87,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         else
         {
+            // If the local player for this client is not instantiated, instantiate it
             if (Player.LocalPlayerInstance == null)
             {
                 // Instantiate the Player

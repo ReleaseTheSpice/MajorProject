@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -55,5 +56,35 @@ public class NetworkManager : MonoBehaviour
         PhotonView.Find(viewID).GetComponent<Player>().life = life;
     }
     
+    [PunRPC]
+    public void AddCardToStack(int cardViewID, int stackID, int playerID, string cardName)
+    {
+        GameObject card = PhotonView.Find(cardViewID).gameObject;
+        GameObject stack = PhotonView.Find(stackID).gameObject;
+        // Rename the card to not include (Clone)
+        card.name = cardName;
+        // Set the card owner
+        card.GetComponent<Card>().owner = PhotonView.Find(playerID).gameObject;
+        // Put it on the stack canvas
+        card.GetComponent<Interactable>().updateCanvas(
+            stack.GetComponentInChildren<Canvas>());
+        // Set the transform parent
+        card.transform.SetParent(
+            stack.GetComponent<Stack>().GetCanvasTransform());
+        // Disable the raycaster on the image so the card can't be dragged
+        // (raycastTarget is already disabled on other components of the card)
+        card.GetComponent<Image>().raycastTarget = false;
+        // Call the stack's AddCard method
+        stack.GetComponent<Stack>().AddCard(card);
+        card.GetComponent<Card>().AddEffect(stack.GetComponent<Stack>());
+    }
+    
+    [PunRPC]
+    public void ClearStack(int stackID)
+    {
+        PhotonView.Find(stackID).GetComponent<Stack>().cards.Clear();
+        PhotonView.Find(stackID).GetComponent<Stack>().cardEffects.Clear();
+    }
+
     #endregion
 }

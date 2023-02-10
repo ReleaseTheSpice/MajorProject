@@ -107,30 +107,30 @@ public class Stack : MonoBehaviour, IPunObservable
                     counterNextCard = false;
                 }
             }
+            
+            // Card has been resolved, Destroy it and instantiate a new one in the deck
+            GameObject originalOwner = cards[i].GetComponent<Card>().owner;
+            GameObject newCard = originalOwner.GetComponentInChildren<Deck>().InstantiateNewCard(cards[i]);
             if (goToHand) // Some cards will go to a hand instead of returning to a deck after played
             {
                 goToHand = false;
-                owner.myHand.GetComponent<Hand>().AddCard(cards[i]);
+                owner.myHand.GetComponent<Hand>().AddCard(newCard);
             }
             else
             {
-                // Add the interactable component back to the card
-                //TODO: Maybe destroy the card and just instantiate a new one in the deck
-                cards[i].AddComponent<Interactable>();
-                
-                // Return the card to its original owner
-                GameObject originalOwner = cards[i].GetComponent<Card>().owner;
                 // Call AddCard on the owner's deck
-                originalOwner.GetComponentInChildren<Deck>().AddCard(cards[i]);
+                originalOwner.GetComponentInChildren<Deck>().AddCard(newCard);
             }
+            // Destroy the card
+            PhotonNetwork.Destroy(cards[i]);
         }
         // Photon RPC to update the life text
         GameManager.NetworkManager.PV.RPC("SetPlayerLife", RpcTarget.All, 
             owner.gameObject.GetComponent<PhotonView>().ViewID, owner.life);
 
-        // Clear the stack
-        cards.Clear();
-        cardEffects.Clear();
+        // Clear the stack on all clients
+        GameManager.NetworkManager.PV.RPC("ClearStack", RpcTarget.All,
+            GetComponent<PhotonView>().ViewID);
     }
 
     // Reset all card effect variables to their default values

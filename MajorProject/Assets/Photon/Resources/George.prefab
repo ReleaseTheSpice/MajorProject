@@ -380,6 +380,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   cardNameText: {fileID: 7543406616933242841}
   cardDescriptionText: {fileID: 7543406614969589994}
+  stackID: 0
 --- !u!114 &9074228665848145559
 MonoBehaviour:
   m_ObjectHideFlags: 0

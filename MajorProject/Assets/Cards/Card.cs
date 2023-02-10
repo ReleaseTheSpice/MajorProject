@@ -16,20 +16,25 @@ public class Card : MonoBehaviour, IPunObservable
     public GameObject owner;
     public GameObject cardNameText;
     public GameObject cardDescriptionText;
+    
+    // PhotonView ID of the stack that this card belongs to, 0 if not on a stack
+    public int stackID = 0;
 
     //TODO: REMOVE THIS AND IPUNOBSERVABLE?
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (stream.IsWriting)
-        {
-            // We own this player: send the others our data
-            //stream.SendNext(transform.position);
-        }
-        else
-        {
-            // Network player, receive data
-            //transform.position = (Vector3) stream.ReceiveNext();
-        }
+        // if (stream.IsWriting)
+        // {
+        //     // We own this instance: send the others our data
+        //     stream.SendNext(owner.GetComponent<PhotonView>().ViewID);
+        // }
+        // else
+        // {
+        //     // Networked instance, receive data
+        //     int ownerID = (Int32) stream.ReceiveNext();
+        //     owner = PhotonView.Find(ownerID).gameObject;
+        //     if (stackID)
+        // }
     }
     
     public void AddEffect(Stack stack)
@@ -45,6 +50,11 @@ public class Card : MonoBehaviour, IPunObservable
     {
         cardNameText.GetComponent<TextMeshProUGUI>().text = cardName;
         cardDescriptionText.GetComponent<TextMeshProUGUI>().text = cardDescription;
+    }
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
     }
 
     // Update is called once per frame
