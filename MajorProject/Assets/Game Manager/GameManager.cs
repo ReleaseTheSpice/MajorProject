@@ -136,16 +136,16 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient)
         {
             Debug.LogError("PhotonNetwork: Trying to Load a level but we are not the master Client");
+            return;
         }
         Debug.LogFormat("PhotonNetwork: Loading Level: {0}", PhotonNetwork.CurrentRoom.PlayerCount);
         //PhotonNetwork.LoadLevel("Room for " + PhotonNetwork.CurrentRoom.PlayerCount);
-        //PhotonNetwork.LoadLevel("Room for 2");
+        PhotonNetwork.LoadLevel("Room for 2");
     }
 
     private Vector3 GetNewStackPosition(int ID)
     {
         int identifier = (int)Math.Floor(ID / 1000f) - 1;
-        Debug.Log("ID: " + identifier);
 
         float x;
         if (identifier%2 == 0)

@@ -17,10 +17,12 @@ public class Player : MonoBehaviour
     
     public int life;
     public string playerName;
+
+    public int turnCounter = 99;
     
     #endregion
 
-    #region Callback Handlers
+    #region MohoBehaviour Callback Handlers
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +31,13 @@ public class Player : MonoBehaviour
         
         List<int> deckCode = new List<int>(){ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
         myDeck.GetComponent<Deck>().GenerateDeck(deckCode);
+        // Set turn order
+        turnCounter = (int)Math.Floor(PhotonView.Get(this).ViewID / 1000f) - 1;
+        if (turnCounter == 0)
+        {
+            Debug.Log(PhotonNetwork.NickName + " will go first");
+            StartTurn();
+        }
     }
 
     private void Awake()
@@ -47,11 +56,6 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Need to have "using Photon.Pun;" at the top of the file
-        // if (photonView.IsMine == false && PhotonNetwork.IsConnected == true)
-        // {
-        //     return;
-        // }
         if (life <= 0)
         {
             Debug.Log("You lose!");
@@ -65,7 +69,52 @@ public class Player : MonoBehaviour
 
     #region Public Methods
 
+    
+    [PunRPC]
+    public void ChangeTurn()
+    {
+        turnCounter--;
+        if (turnCounter < 0)
+        {
+            turnCounter = PhotonNetwork.CurrentRoom.PlayerCount - 1;
+        }
+        if (turnCounter == 0)
+        {
+            Debug.Log(PhotonNetwork.NickName + " starting turn");
+            StartTurn();
+        }
+    }
 
+    public void EndTurn()
+    {
+        Debug.Log(PhotonNetwork.NickName + " Ending turn");
+        // Set each card in hand to inactive
+        foreach (GameObject card in myHand.GetComponent<Hand>().cards)
+        {
+            card.GetComponent<Interactable>().myTurn = false;
+        }
+        
+        // Change turn counter
+        PhotonView.Get(this).RPC("ChangeTurn", RpcTarget.All);
+    }
+    
+    #endregion
+    
+    #region Private Methods
+
+    private void StartTurn()
+    {
+        // Draw a card
+        myDeck.GetComponent<Deck>().DrawCard(2);
+        // Set turn counter to 0
+        turnCounter = 0;
+        
+        // Set each card in hand to active
+        foreach (GameObject card in myHand.GetComponent<Hand>().cards)
+        {
+            card.GetComponent<Interactable>().myTurn = true;
+        }
+    }
 
     #endregion
 }

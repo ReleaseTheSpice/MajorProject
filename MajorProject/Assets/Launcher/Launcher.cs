@@ -6,6 +6,18 @@ using Photon.Realtime;
 public class Launcher : MonoBehaviourPunCallbacks
 {
     #region Private Serializable Fields
+    
+    [Tooltip("The UI panel to let the user see name, connect, and play")]
+    [SerializeField]
+    private GameObject controlPanel;
+    
+    [Tooltip("The UI Label to inform the user that the connection is in progress")]
+    [SerializeField]
+    private GameObject progressLabel;
+    
+    [Tooltip("The UI Button to cancel the connection progress")]
+    [SerializeField]
+    private GameObject cancelButton;
 
     #endregion
     
@@ -17,19 +29,13 @@ public class Launcher : MonoBehaviourPunCallbacks
     /// Typically this is used for the OnConnectedToMaster() callback.
     /// </summary>
     bool isConnecting;
+
+    private bool waitingForPlayers;
     
     // This client's version number. Users are separated from each other by gameVersion (which allows me to make breaking changes).
     // Should be left at 1 until changes need to be made to a live game
     string gameVersion = "1";
-    
-    [Tooltip("The UI panel to let the user see name, connect, and play")]
-    [SerializeField]
-    private GameObject controlPanel;
-    
-    [Tooltip("The UI Label to inform the user that the connection is in progress")]
-    [SerializeField]
-    private GameObject progressLabel;
-    
+
     #endregion
     
     #region MonoBehaviour CallBacks
@@ -46,8 +52,22 @@ public class Launcher : MonoBehaviourPunCallbacks
         // Set the progress label to be inactive and show the default control panel
         progressLabel.SetActive(false);
         controlPanel.SetActive(true);
+        cancelButton.SetActive(false);
     }
-    
+
+    // private void Update()
+    // {
+    //     // If we are connected to a room but waiting for players, keep checking if we have enough
+    //     if (waitingForPlayers)
+    //     {
+    //         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+    //         {
+    //             PhotonNetwork.LoadLevel("Room for 2");
+    //             waitingForPlayers = false;
+    //         }
+    //     }
+    // }
+
     #endregion
     
     #region Public Methods
@@ -60,6 +80,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         // Sow "Connecting..." progress label and disable the control panel
         progressLabel.SetActive(true);
         controlPanel.SetActive(false);
+        cancelButton.SetActive(true);
         
         // we check if we are connected or not, we join if we are, else we initiate the connection to the server.
         if (PhotonNetwork.IsConnected)
@@ -77,6 +98,18 @@ public class Launcher : MonoBehaviourPunCallbacks
             PhotonNetwork.GameVersion = gameVersion;
         }
     }
+    
+    public void Cancel()
+    {
+        // Show the default control panel again
+        progressLabel.SetActive(false);
+        controlPanel.SetActive(true);
+        cancelButton.SetActive(false);
+        
+        // Disconnect from the server
+        PhotonNetwork.Disconnect();
+    }
+    
     #endregion
     
     #region MonoBehaviourPunCallbacks Callbacks
@@ -116,14 +149,20 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
         // #Critical: We only load if we are the first player, else we rely on `PhotonNetwork.AutomaticallySyncScene` to sync our instance scene.
         if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
         {
-            //Debug.Log("We load the 'Room for 1' ");
+            //TODO: Add another button to the launcher scene to specify and pass in lobby size,
+            //TODO: then wait for that many players to join before loading the room
 
             // #Critical - Load the Room Level.
             PhotonNetwork.LoadLevel("Room for 2");
         }
+        // else
+        // {
+        //     waitingForPlayers = true;
+        // }
     }
     
     #endregion

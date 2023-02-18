@@ -15,7 +15,10 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     public Vector3 homePosition;
     // ^ Maybe this shouldnt be serializable/public?
     
+    // Set to true when the card can be dragged, i.e. when it is in the player's hand
     public bool draggable = false;
+    // Set to true when it is the current player's turn, and they can play cards
+    public bool myTurn = false;
     
     private void Awake()
     {
@@ -39,7 +42,7 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     // Fires when the player is dragging the object
     public void OnDrag(PointerEventData eventData)
     {
-        if (draggable)
+        if (draggable && myTurn)
         {
             // Debug.Log("Drag");
             
@@ -80,6 +83,8 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
                 int playerID = gameObject.GetComponent<Card>().owner.GetComponent<PhotonView>().ViewID;
                 GameManager.NetworkManager.PV.RPC(
                     "AddCardToStack", RpcTarget.All, cardID, stackID, playerID, gameObject.name);
+                // End the turn
+                gameObject.GetComponentInParent<Player>().EndTurn();
                 // Delete the original card object
                 Destroy(gameObject);
             }
