@@ -95,7 +95,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
                 GameObject p = PhotonNetwork.Instantiate(
                     this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
-                p.GetComponentInChildren<Canvas>().worldCamera = Camera.main;
                 // RPC calls are only sent to other instances of the same prefab
                 NetworkManager.PV.RPC("SetPlayerName", RpcTarget.AllBuffered, 
                     p.GetComponent<PhotonView>().ViewID, PhotonNetwork.NickName);

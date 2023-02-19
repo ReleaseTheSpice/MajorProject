@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
 {
     #region Public Fields
 
+    public GameObject playerCanvasPrefab;
     public GameObject myDeck;
     public GameObject myHand;
     
@@ -27,6 +28,22 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Instantiate the canvas
+        if (playerCanvasPrefab == null)
+        {
+            Debug.LogError("Player Canvas prefab reference is null", this);
+        }
+        else
+        {
+            // Instantiating locally so other players can't see it
+            GameObject myCanvas = Instantiate(playerCanvasPrefab, transform);
+            // Connect the canvas to the player
+            myCanvas.GetComponent<Canvas>().worldCamera = Camera.main;
+            myHand = myCanvas.transform.Find("Hand").gameObject;
+            myDeck = myCanvas.transform.Find("Deck").gameObject;
+            myDeck.GetComponent<Deck>().player = gameObject;
+        }
+        
         life = 20;
         
         List<int> deckCode = new List<int>(){ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
