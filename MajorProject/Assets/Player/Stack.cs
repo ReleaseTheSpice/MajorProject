@@ -19,29 +19,20 @@ public class Stack : MonoBehaviour, IPunObservable
     public Transform canvasTransform;   // Reference to this stack's Canvas
 
     #region Photon
-
+    
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (stream.IsWriting)
-        {
-            // We own this player: send the others our data
-            // stream.SendNext(cards);
-            // stream.SendNext(cardEffects);
-            // stream.SendNext(owner);
-            // stream.SendNext(lifeText);
-            // stream.SendNext(nameText);
-            // stream.SendNext(canvasTransform);
-        }
-        else
-        {
-            // Network player, receive data
-            // cards = (List<GameObject>) stream.ReceiveNext();
-            // cardEffects = (List<Delegate>) stream.ReceiveNext();
-            // owner = (Player) stream.ReceiveNext();
-            // lifeText = (GameObject) stream.ReceiveNext();
-            // nameText = (TextMeshProUGUI) stream.ReceiveNext();
-            // canvasTransform = (Transform) stream.ReceiveNext();
-        }
+        // if (stream.IsWriting)
+        // {
+        //     // We own this instance: send the others our data
+        //     stream.SendNext(owner.GetComponent<PhotonView>().ViewID);
+        // }
+        // else
+        // {
+        //     // Networked instance, receive data
+        //     int ownerID = (Int32) stream.ReceiveNext();
+        //     owner = PhotonView.Find(ownerID).gameObject.GetComponent<Player>();
+        // }
     }
 
     #endregion
@@ -110,19 +101,31 @@ public class Stack : MonoBehaviour, IPunObservable
             
             // Card has been resolved, Destroy it and instantiate a new one in the deck
             GameObject originalOwner = cards[i].GetComponent<Card>().owner;
-            GameObject newCard = originalOwner.GetComponentInChildren<Deck>().InstantiateNewCard(cards[i]);
-            if (goToHand) // Some cards will go to a hand instead of returning to a deck after played
+            
+            // Only return a card to a deck if this is the client with access to that deck (or hand)
+            if (originalOwner.GetComponent<Player>().myDeck != null)
             {
-                goToHand = false;
-                owner.myHand.GetComponent<Hand>().AddCard(newCard);
-            }
-            else
-            {
-                // Call AddCard on the owner's deck
-                originalOwner.GetComponentInChildren<Deck>().AddCard(newCard);
+                Deck originalDeck = originalOwner.GetComponent<Player>().myDeck.GetComponent<Deck>();
+                GameObject newCard = originalDeck.InstantiateNewCard(cards[i]);
+                
+                if (goToHand) // Some cards will go to a hand instead of returning to a deck after played
+                {
+                    goToHand = false;
+                    owner.myHand.GetComponent<Hand>().AddCard(newCard);
+                }
+                else
+                {
+                    // Call AddCard on the owner's deck
+                    originalDeck.AddCard(newCard);
+                }
             }
             // Destroy the card
-            PhotonNetwork.Destroy(cards[i]);
+            //PhotonNetwork.Destroy(cards[i]);
+            
+            // Photon RPC to the original owner to destroy the card
+            GameManager.NetworkManager.PV.RPC("DestroyCard", 
+                originalOwner.GetComponent<PhotonView>().Owner, 
+                cards[i].GetComponent<PhotonView>().ViewID);
         }
         // Photon RPC to update the life text
         GameManager.NetworkManager.PV.RPC("SetPlayerLife", RpcTarget.All, 

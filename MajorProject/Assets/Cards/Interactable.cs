@@ -84,7 +84,8 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
                 GameManager.NetworkManager.PV.RPC(
                     "AddCardToStack", RpcTarget.All, cardID, stackID, playerID, gameObject.name);
                 // End the turn
-                gameObject.GetComponentInParent<Player>().EndTurn();
+                //gameObject.GetComponentInParent<Player>().EndTurn();
+                NetworkManager.LocalPlayer.GetComponent<Player>().EndTurn();
                 // Delete the original card object
                 Destroy(gameObject);
             }

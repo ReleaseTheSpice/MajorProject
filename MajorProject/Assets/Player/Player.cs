@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ExitGames.Client.Photon;
 using TMPro;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 
 public class Player : MonoBehaviour
 {
@@ -28,32 +30,35 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Instantiate the canvas
-        if (playerCanvasPrefab == null)
-        {
-            Debug.LogError("Player Canvas prefab reference is null", this);
-        }
-        else
-        {
-            // Instantiating locally so other players can't see it
-            GameObject myCanvas = Instantiate(playerCanvasPrefab, transform);
-            // Connect the canvas to the player
-            myCanvas.GetComponent<Canvas>().worldCamera = Camera.main;
-            myHand = myCanvas.transform.Find("Hand").gameObject;
-            myDeck = myCanvas.transform.Find("Deck").gameObject;
-            myDeck.GetComponent<Deck>().player = gameObject;
-        }
-        
         life = 20;
-        
-        List<int> deckCode = new List<int>(){ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
-        myDeck.GetComponent<Deck>().GenerateDeck(deckCode);
-        // Set turn order
-        turnCounter = (int)Math.Floor(PhotonView.Get(this).ViewID / 1000f) - 1;
-        if (turnCounter == 0)
+        // Only instantiate the canvas if this is the local player
+        if (PhotonView.Get(this).IsMine)
         {
-            Debug.Log(PhotonNetwork.NickName + " will go first");
-            StartTurn();
+            // Instantiate the canvas
+            if (playerCanvasPrefab == null)
+            {
+                Debug.LogError("Player Canvas prefab reference is null", this);
+            }
+            else
+            {
+                // Instantiating locally so other players can't see it
+                GameObject myCanvas = Instantiate(playerCanvasPrefab);
+                // Connect the canvas to the player
+                myCanvas.GetComponent<Canvas>().worldCamera = Camera.main;
+                myHand = myCanvas.transform.Find("Hand").gameObject;
+                myDeck = myCanvas.transform.Find("Deck").gameObject;
+                myDeck.GetComponent<Deck>().player = gameObject;
+            }
+            
+            List<int> deckCode = new List<int>(){ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
+            myDeck.GetComponent<Deck>().GenerateDeck(deckCode);
+            // Set turn order
+            turnCounter = (int)Math.Floor(PhotonView.Get(this).ViewID / 1000f) - 1;
+            if (turnCounter == 0)
+            {
+                Debug.Log(PhotonNetwork.NickName + " will go first");
+                StartTurn();
+            }
         }
     }
 
@@ -78,8 +83,6 @@ public class Player : MonoBehaviour
             Debug.Log("You lose!");
             GameManager.Instance.LeaveRoom();
         }
-
-        //lifeText.GetComponent<TextMeshProUGUI>().text = life.ToString();
     }
     
     #endregion
@@ -90,18 +93,25 @@ public class Player : MonoBehaviour
     [PunRPC]
     public void ChangeTurn()
     {
+        ChangeTurnCounter();
+    }
+
+    public void ChangeTurnCounter()
+    {
         turnCounter--;
         if (turnCounter < 0)
         {
             turnCounter = PhotonNetwork.CurrentRoom.PlayerCount - 1;
         }
+        Debug.Log(PhotonNetwork.NickName + ": " + turnCounter);
+        //playerName = playerName + " " + turnCounter;
         if (turnCounter == 0)
         {
             Debug.Log(PhotonNetwork.NickName + " starting turn");
             StartTurn();
         }
     }
-
+    
     public void EndTurn()
     {
         Debug.Log(PhotonNetwork.NickName + " Ending turn");
@@ -111,8 +121,10 @@ public class Player : MonoBehaviour
             card.GetComponent<Interactable>().myTurn = false;
         }
         
-        // Change turn counter
-        PhotonView.Get(this).RPC("ChangeTurn", RpcTarget.All);
+        // Trigger event to change turn
+        object[] data = new object[] { };
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+        PhotonNetwork.RaiseEvent(2, data, raiseEventOptions, SendOptions.SendReliable);
     }
     
     #endregion
@@ -121,11 +133,10 @@ public class Player : MonoBehaviour
 
     private void StartTurn()
     {
-        // Draw a card
+        Debug.LogError(PhotonNetwork.NickName + " Starting turn");
+        // Draw cards
         myDeck.GetComponent<Deck>().DrawCard(2);
-        // Set turn counter to 0
-        turnCounter = 0;
-        
+
         // Set each card in hand to active
         foreach (GameObject card in myHand.GetComponent<Hand>().cards)
         {

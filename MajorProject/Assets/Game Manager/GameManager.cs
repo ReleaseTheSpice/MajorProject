@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ExitGames.Client.Photon;
 using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -69,7 +70,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        if (networkManagerObj != null)
+        
+        if (networkManagerObj != null && NetworkManager == null)
         {
             GameObject netMan = PhotonNetwork.Instantiate(networkManagerObj.name, Vector3.zero, Quaternion.identity, 0);
             NetworkManager = netMan.GetComponent<NetworkManager>();
@@ -98,6 +100,10 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // RPC calls are only sent to other instances of the same prefab
                 NetworkManager.PV.RPC("SetPlayerName", RpcTarget.AllBuffered, 
                     p.GetComponent<PhotonView>().ViewID, PhotonNetwork.NickName);
+                // Add the local player's ID to the NetworkManager's list of players
+                AddPlayerID(p.GetComponent<PhotonView>().ViewID);
+                // Set the local player as the NetworkManager's local player
+                NetworkManager.LocalPlayer = p;
 
                 // Instantiate a Stack for the local player
                 GameObject s = PhotonNetwork.Instantiate(
@@ -113,6 +119,20 @@ public class GameManager : MonoBehaviourPunCallbacks
                 Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
             }
         }
+    }
+
+    private void Awake()
+    {
+        // If there is an instance, and it's not me, delete myself.
+        if (Instance != null && Instance != this) 
+        { 
+            Destroy(this); 
+        } 
+        else 
+        { 
+            Instance = this; 
+        } 
+        DontDestroyOnLoad(this);
     }
 
     #endregion
@@ -169,5 +189,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         // return new Vector3(0f, 230f, 0f);
     }
 
+    private void AddPlayerID(int ID)
+    {
+        byte eventCode = 1;
+        object[] content = { ID };
+        // You would have to set the Receivers to All in order to receive this event on the local client as well
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions
+        {
+            Receivers = ReceiverGroup.All, 
+            CachingOption = EventCaching.AddToRoomCache
+        };
+        PhotonNetwork.RaiseEvent(eventCode, content, raiseEventOptions, SendOptions.SendReliable);
+    }
+    
     #endregion
 }

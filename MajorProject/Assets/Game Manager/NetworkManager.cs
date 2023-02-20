@@ -1,16 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ExitGames.Client.Photon;
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NetworkManager : MonoBehaviour
+public class NetworkManager : MonoBehaviour, IOnEventCallback
 {
     #region Public Fields
 
     public static NetworkManager Instance;
     public PhotonView PV;
+    
+    // Keep track of the players in the game
+    public static List<int> playerIDs = new List<int>();
+    
+    // Keep reference to local player
+    public static GameObject LocalPlayer;
 
     #endregion
     
@@ -27,11 +35,41 @@ public class NetworkManager : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
     }
-
-    // Update is called once per frame
-    void Update()
+    
+    private void OnEnable()
     {
+        PhotonNetwork.AddCallbackTarget(this);
+    }
+
+    private void OnDisable()
+    {
+        PhotonNetwork.RemoveCallbackTarget(this);
+    }
+
+    #endregion
+
+    #region Photon Callbacks
+
+    public void OnEvent(EventData photonEvent)
+    {
+        if (photonEvent.Code == 1)
+        {
+            object[] data = (object[]) photonEvent.CustomData;
+            int playerID = (int) data[0];
+            playerIDs.Add(playerID);
+        }
         
+        if (photonEvent.Code == 2)
+        {
+            if (LocalPlayer != null && PV.IsMine)
+            {
+                LocalPlayer.GetComponent<Player>().ChangeTurnCounter();
+            }
+            else
+            {
+                //Debug.LogError("Local player is null");
+            }
+        }
     }
 
     #endregion
@@ -84,6 +122,13 @@ public class NetworkManager : MonoBehaviour
     {
         PhotonView.Find(stackID).GetComponent<Stack>().cards.Clear();
         PhotonView.Find(stackID).GetComponent<Stack>().cardEffects.Clear();
+    }
+    
+    [PunRPC]
+    public void DestroyCard(int cardViewID)
+    {
+        // Find a card with given Photon ID and destroy it on all clients
+        PhotonNetwork.Destroy(PhotonView.Find(cardViewID).gameObject);
     }
 
     #endregion
