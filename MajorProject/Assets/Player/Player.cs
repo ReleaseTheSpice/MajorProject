@@ -52,6 +52,7 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
                 myDeck.GetComponent<Deck>().player = gameObject;
             }
             
+            //TODO: Revisit this method if deck creation becomes a feature
             List<int> deckCode = new List<int>(){ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
             myDeck.GetComponent<Deck>().GenerateDeck(deckCode);
             // Set turn order
@@ -91,10 +92,20 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
 
     #region Photon Callbacks
 
+    //TODO: Revisit this method if deck creation becomes a feature
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
-        object[] instantiationData = info.photonView.InstantiationData;
-        deckCode = instantiationData[0] as List<int>;
+        // Debug.Log("Instantiating player");
+        // object[] instantiationData = info.photonView.InstantiationData;
+        // //deckCode = instantiationData[0] as List<int>;
+        //
+        // // Build the deck code from the instantiation data
+        // foreach (int cardCode in instantiationData)
+        // {
+        //     //TODO: Deck code is null when this is called?
+        //     // that probably means "this" isnt even initialized yet..
+        //     deckCode.Add(cardCode);
+        // }
     }
     
     #endregion
@@ -145,7 +156,7 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
 
     private void StartTurn()
     {
-        Debug.LogError(PhotonNetwork.NickName + " Starting turn");
+        //Debug.LogError(PhotonNetwork.NickName + " Starting turn");
         // Draw cards
         myDeck.GetComponent<Deck>().DrawCard(2);
 

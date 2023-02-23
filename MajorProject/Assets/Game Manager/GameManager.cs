@@ -96,10 +96,10 @@ public class GameManager : MonoBehaviourPunCallbacks
                 Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
                 // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
                 // pack up deck code for instantiated player into custom init data
-                List<int> deckCode = new List<int>() {0, 1, 2};
-                object[] customInitData = new[] { deckCode };
+                List<int> deckCode = new List<int>() { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
+                object[] customInitData = PackDeckCode(deckCode);
                 
-                GameObject p = PhotonNetwork.Instantiate(
+                GameObject p = (GameObject)PhotonNetwork.Instantiate(
                     this.playerPrefab.name, 
                     new Vector3(0f, 0f, 0f), 
                     Quaternion.identity, 
@@ -200,6 +200,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         // return new Vector3(0f, 230f, 0f);
     }
 
+    // TODO: Revisit this method if deck creation becomes a feature
+    private object[] PackDeckCode(List<int> deckCode)
+    {
+        object[] packedDeckCode = new object[deckCode.Count];
+        for (int i = 0; i < deckCode.Count; i++)
+        {
+            packedDeckCode[i] = deckCode[i];
+        }
+        return packedDeckCode;
+    }
+    
     private void AddPlayerID(int ID)
     {
         byte eventCode = 1;
