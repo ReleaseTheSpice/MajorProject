@@ -7,7 +7,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IPunInstantiateMagicCallback
 {
     #region Public Fields
 
@@ -24,6 +24,8 @@ public class Player : MonoBehaviour
     public int turnCounter = 99;
     
     #endregion
+
+    private List<int> deckCode;
 
     #region MohoBehaviour Callback Handlers
 
@@ -87,6 +89,16 @@ public class Player : MonoBehaviour
     
     #endregion
 
+    #region Photon Callbacks
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        object[] instantiationData = info.photonView.InstantiationData;
+        deckCode = instantiationData[0] as List<int>;
+    }
+    
+    #endregion
+    
     #region Public Methods
 
     

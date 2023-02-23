@@ -95,8 +95,16 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // Instantiate the Player
                 Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
                 // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+                // pack up deck code for instantiated player into custom init data
+                List<int> deckCode = new List<int>() {0, 1, 2};
+                object[] customInitData = new[] { deckCode };
+                
                 GameObject p = PhotonNetwork.Instantiate(
-                    this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
+                    this.playerPrefab.name, 
+                    new Vector3(0f, 0f, 0f), 
+                    Quaternion.identity, 
+                    0, 
+                    customInitData);
                 // RPC calls are only sent to other instances of the same prefab
                 NetworkManager.PV.RPC("SetPlayerName", RpcTarget.AllBuffered, 
                     p.GetComponent<PhotonView>().ViewID, PhotonNetwork.NickName);
@@ -107,7 +115,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                 // Instantiate a Stack for the local player
                 GameObject s = PhotonNetwork.Instantiate(
-                    this.stackPrefab.name, new Vector3(0f, 230f, 0f), Quaternion.identity, 0);
+                    this.stackPrefab.name, 
+                    new Vector3(0f, 230f, 0f), 
+                    Quaternion.identity, 
+                    0);
                 s.GetComponent<Stack>().owner = p.GetComponent<Player>();
                 s.transform.position = GetNewStackPosition(NetworkManager.PV.ViewID);
                 NetworkManager.PV.RPC("SetStackOwner", RpcTarget.AllBuffered, 
