@@ -123,7 +123,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                 s.transform.position = GetNewStackPosition(NetworkManager.PV.ViewID);
                 NetworkManager.PV.RPC("SetStackOwner", RpcTarget.AllBuffered, 
                     s.GetComponent<PhotonView>().ViewID, p.GetComponent<PhotonView>().ViewID);
-
+                // Assign the local player's stack to the local player
+                p.GetComponent<Player>().myStack = s;
             }
             else
             {

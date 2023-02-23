@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour, IPunInstantiateMagicCallback
 {
@@ -14,6 +15,8 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
     public GameObject playerCanvasPrefab;
     public GameObject myDeck;
     public GameObject myHand;
+
+    public GameObject myStack;
     
     [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
     public static GameObject LocalPlayerInstance;
@@ -22,10 +25,17 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
     public string playerName;
 
     public int turnCounter = 99;
+    public bool passedTurn = true;
     
     #endregion
+    
+    #region Private Fields
 
     private List<int> deckCode;
+    private GameObject passButton;
+
+    #endregion
+
 
     #region MohoBehaviour Callback Handlers
 
@@ -50,11 +60,19 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
                 myHand = myCanvas.transform.Find("Hand").gameObject;
                 myDeck = myCanvas.transform.Find("Deck").gameObject;
                 myDeck.GetComponent<Deck>().player = gameObject;
+
+                passButton = myHand.transform.GetChild(0).gameObject;
+                passButton.GetComponent<Button>().onClick.AddListener(PassTurn);
+                passButton.SetActive(false);
             }
             
             //TODO: Revisit this method if deck creation becomes a feature
             List<int> deckCode = new List<int>(){ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
             myDeck.GetComponent<Deck>().GenerateDeck(deckCode);
+            
+            // Draw starting hand
+            myDeck.GetComponent<Deck>().DrawCard(5);
+            
             // Set turn order
             turnCounter = (int)Math.Floor(PhotonView.Get(this).ViewID / 1000f) - 1;
             if (turnCounter == 0)
@@ -112,13 +130,6 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
     
     #region Public Methods
 
-    
-    [PunRPC]
-    public void ChangeTurn()
-    {
-        ChangeTurnCounter();
-    }
-
     public void ChangeTurnCounter()
     {
         turnCounter--;
@@ -130,6 +141,21 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
         //playerName = playerName + " " + turnCounter;
         if (turnCounter == 0)
         {
+            if (passedTurn)
+            {
+                // Resolve all effects
+                GameManager.NetworkManager.PV.RPC("ResolveStacks", RpcTarget.All);
+                GameManager.NetworkManager.PV.RPC(
+                    "UpdateStackGlow", 
+                    RpcTarget.All, 
+                    myStack.GetComponent<PhotonView>().ViewID, 
+                    0);
+                passedTurn = false;
+                
+                // Draw cards
+                myDeck.GetComponent<Deck>().DrawCard(2);
+            }
+
             Debug.Log(PhotonNetwork.NickName + " starting turn");
             StartTurn();
         }
@@ -144,6 +170,15 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
             card.GetComponent<Interactable>().myTurn = false;
         }
         
+        // Disable the glow on the stack
+        GameManager.NetworkManager.PV.RPC(
+            "UpdateStackGlow", 
+            RpcTarget.All, 
+            myStack.GetComponent<PhotonView>().ViewID, 
+            0);
+        // Set the pass button to inactive
+        passButton.SetActive(false);
+        
         // Trigger event to change turn
         object[] data = new object[] { };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
@@ -157,15 +192,35 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
     private void StartTurn()
     {
         //Debug.LogError(PhotonNetwork.NickName + " Starting turn");
-        // Draw cards
-        myDeck.GetComponent<Deck>().DrawCard(2);
 
         // Set each card in hand to active
         foreach (GameObject card in myHand.GetComponent<Hand>().cards)
         {
             card.GetComponent<Interactable>().myTurn = true;
         }
+        
+        // Enable the glow on the stack
+        GameManager.NetworkManager.PV.RPC(
+            "UpdateStackGlow", 
+            RpcTarget.All, 
+            myStack.GetComponent<PhotonView>().ViewID, 
+            1);
+        // Set the pass button to active
+        passButton.SetActive(true);
     }
 
+    private void PassTurn()
+    {
+        passedTurn = true;
+        // End turn
+        EndTurn();
+        // Enable the glow on the stack
+        GameManager.NetworkManager.PV.RPC(
+            "UpdateStackGlow", 
+            RpcTarget.All, 
+            myStack.GetComponent<PhotonView>().ViewID, 
+            2);
+    }
+    
     #endregion
 }

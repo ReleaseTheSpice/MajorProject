@@ -123,7 +123,34 @@ public class NetworkManager : MonoBehaviour, IOnEventCallback
         PhotonView.Find(stackID).GetComponent<Stack>().cards.Clear();
         PhotonView.Find(stackID).GetComponent<Stack>().cardEffects.Clear();
     }
-    
+
+    [PunRPC]
+    public void ResolveStacks()
+    {
+        // Get each client to resolve their stacks
+        GameObject stack = LocalPlayer.GetComponent<Player>().myStack;
+        stack.GetComponent<Stack>().ResolveEffects();
+    }
+
+    [PunRPC]
+    public void UpdateStackGlow(int stackID, int type)
+    {
+        Transform stack = PhotonView.Find(stackID).gameObject.transform;
+        switch (type)
+        {
+            case 0: // Disable glow
+                stack.GetChild(0).gameObject.SetActive(false);
+                stack.GetChild(1).gameObject.SetActive(false);
+                break;
+            case 1: // Current turn glow
+                stack.GetChild(1).gameObject.SetActive(true);
+                break;
+            case 2: // Passed turn glow
+                stack.GetChild(0).gameObject.SetActive(true);
+                break;
+        }
+    }
+
     [PunRPC]
     public void DestroyCard(int cardViewID)
     {

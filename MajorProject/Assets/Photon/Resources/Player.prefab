@@ -48,9 +48,11 @@ MonoBehaviour:
   playerCanvasPrefab: {fileID: 6811651544841460124, guid: 7f6c8315654af4e4b80fa9dbe28b2467, type: 3}
   myDeck: {fileID: 0}
   myHand: {fileID: 0}
+  myStack: {fileID: 0}
   life: 0
   playerName: 
   turnCounter: 0
+  passedTurn: 0
 --- !u!114 &2949377612313291475
 MonoBehaviour:
   m_ObjectHideFlags: 0
