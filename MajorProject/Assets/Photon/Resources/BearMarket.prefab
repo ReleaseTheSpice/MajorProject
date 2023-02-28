@@ -281,7 +281,7 @@ GameObject:
   - component: {fileID: 9074228665848145559}
   - component: {fileID: 8244994059922414477}
   m_Layer: 5
-  m_Name: George
+  m_Name: BearMarket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,7 +337,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4ac2d19404892a541b3cd1aaba114f84, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c02928dfc941d1443814dc740ad41676, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -375,9 +375,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f9fae728282d3847b6adad26aa1095e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardName: George
-  cardID: 1
-  cardDescription: Gain 4 life.
+  cardName: Bear Market
+  cardID: 4
+  cardDescription: The next time you would lose life, lose twice that amount.
   owner: {fileID: 0}
   cardNameText: {fileID: 7543406616933242841}
   cardDescriptionText: {fileID: 7543406614969589994}
@@ -401,6 +401,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 7543406616448813506}
   - {fileID: 8244994059922414477}
   sceneViewId: 0
   InstantiationId: 0

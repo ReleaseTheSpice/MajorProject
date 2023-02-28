@@ -278,11 +278,10 @@ GameObject:
   - component: {fileID: 7543406616448813519}
   - component: {fileID: 7543406616448813517}
   - component: {fileID: 7543406616448813506}
-  - component: {fileID: 984068750013337950}
-  - component: {fileID: 5565077042379020170}
-  - component: {fileID: 2665325659045658095}
+  - component: {fileID: 9074228665848145559}
+  - component: {fileID: 8244994059922414477}
   m_Layer: 5
-  m_Name: Tony
+  m_Name: Hibernate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -338,7 +337,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f212568a6c2f41242a9d05d772f55da0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8ad41b3be57e5ab478dea6349706878a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -376,14 +375,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f9fae728282d3847b6adad26aa1095e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardName: Tony
-  cardID: 0
-  cardDescription: Lose 4 life.
+  cardName: Hibernate
+  cardID: 3
+  cardDescription: The next time you would gain life, gain twice that amount.
   owner: {fileID: 0}
   cardNameText: {fileID: 7543406616933242841}
   cardDescriptionText: {fileID: 7543406614969589994}
   stackID: 0
---- !u!114 &984068750013337950
+--- !u!114 &9074228665848145559
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -403,11 +402,11 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 7543406616448813506}
-  - {fileID: 5565077042379020170}
+  - {fileID: 8244994059922414477}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &5565077042379020170
+--- !u!114 &8244994059922414477
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -423,18 +422,6 @@ MonoBehaviour:
   m_SynchronizeRotation: 0
   m_SynchronizeScale: 0
   m_UseLocal: 1
---- !u!225 &2665325659045658095
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7543406616448813512}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!1 &7543406616933242841
 GameObject:
   m_ObjectHideFlags: 0

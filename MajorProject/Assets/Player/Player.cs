@@ -67,7 +67,7 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
             }
             
             //TODO: Revisit this method if deck creation becomes a feature
-            List<int> deckCode = new List<int>(){ 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
+            List<int> deckCode = new List<int>(){ 0, 1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 3 };
             myDeck.GetComponent<Deck>().GenerateDeck(deckCode);
             
             // Draw starting hand

@@ -147,16 +147,16 @@ public class Stack : MonoBehaviour, IPunObservable
     #region Card Effects
 
     // Card ID: 0
-    public void Tony()
+    public void Maul()
     {
-        Debug.Log("Tony effect");
+        Debug.Log("Maul effect");
         LoseLife(4);
     }
     
     // Card ID: 1
-    public void George()
+    public void Heal()
     {
-        Debug.Log("George effect");
+        Debug.Log("Heal effect");
         GainLife(4);
     }
     
@@ -196,7 +196,7 @@ public class Stack : MonoBehaviour, IPunObservable
     }
     
     // Card ID: 7
-    public void EatSand()
+    public void ProfessorBear()
     {
         LoseLife(6);
         DrawCards(3);
@@ -298,6 +298,7 @@ public class Stack : MonoBehaviour, IPunObservable
         {
             if (lifeDoubler)
             {
+                //TODO: Perhaps multiple doublers should stack multiplicitively
                 amount *= 2;
                 lifeDoubler = false;
             }

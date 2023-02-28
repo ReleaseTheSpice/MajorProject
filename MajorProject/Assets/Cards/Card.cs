@@ -39,7 +39,9 @@ public class Card : MonoBehaviour, IPunObservable
     
     public void AddEffect(Stack stack)
     {
-        Delegate effect = Delegate.CreateDelegate(typeof(Action), stack, cardName);
+        // Remove spaces from the card name to make it a valid function name
+        string effectName = cardName.Replace(" ", "");
+        Delegate effect = Delegate.CreateDelegate(typeof(Action), stack, effectName);
         stack.cardEffects.Add(effect);
     }
 
