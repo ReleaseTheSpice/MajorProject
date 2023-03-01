@@ -130,6 +130,7 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
     
     #region Public Methods
 
+    // Generic logic for updating local player's turn counter
     public void ChangeTurnCounter()
     {
         turnCounter--;
@@ -161,6 +162,7 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
         }
     }
     
+    // Generic logic for ending local player's turn
     public void EndTurn()
     {
         Debug.Log(PhotonNetwork.NickName + " Ending turn");
@@ -179,7 +181,7 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
         // Set the pass button to inactive
         passButton.SetActive(false);
         
-        // Trigger event to change turn
+        // Trigger event to change turn and update turn counter on all clients
         object[] data = new object[] { };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
         PhotonNetwork.RaiseEvent(2, data, raiseEventOptions, SendOptions.SendReliable);
@@ -209,6 +211,7 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
         passButton.SetActive(true);
     }
 
+    // Called by the "Pass turn" button
     private void PassTurn()
     {
         passedTurn = true;
