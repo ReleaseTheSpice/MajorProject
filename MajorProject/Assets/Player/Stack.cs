@@ -6,7 +6,7 @@ using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
-public class Stack : MonoBehaviour, IPunObservable, IPointerDownHandler
+public class Stack : MonoBehaviour, IPunObservable
 {
     public List<GameObject> cards;
     
@@ -366,23 +366,23 @@ public class Stack : MonoBehaviour, IPunObservable, IPointerDownHandler
     {
         lifeText.GetComponent<TextMeshProUGUI>().text = owner.life.ToString();
     }
-    
-    public void OnPointerDown(PointerEventData eventData)
+
+    void OnMouseDown()
     {
-        Debug.Log("Player " + PhotonNetwork.LocalPlayer.NickName + " clicked on the stack");
+        //Debug.Log("Player " + PhotonNetwork.LocalPlayer.NickName + " clicked on the stack");
         displayingCards = !displayingCards;
         if (displayingCards)
         {
             // Display the cards
-            Vector3 shiftDistance = new Vector3(220f, 0, 0);
             int halfCount = cards.Count / 2;
             for (int i = 0; i < cards.Count; i++)
             {
+                Vector3 shiftDistance = new Vector3(220f, 0, 0);
                 shiftDistance *= (i - halfCount);
                 // If the number of cards is even, shift them all to the right
                 if (cards.Count % 2 == 0)
                 {
-                    shiftDistance += (shiftDistance / 2);
+                    shiftDistance += new Vector3(110f, 0, 0);
                 }
                 cards[i].transform.position += shiftDistance;
             }
@@ -396,6 +396,6 @@ public class Stack : MonoBehaviour, IPunObservable, IPointerDownHandler
             }
         }
     }
-
+    
     #endregion
 }

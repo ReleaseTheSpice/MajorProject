@@ -106,8 +106,9 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         //Output to console the GameObject's name and the following message
-        Debug.Log("Cursor Entering " + name + " GameObject");
+        //Debug.Log("Cursor Entering " + name + " GameObject");
         transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);   // scale up
+        transform.position += new Vector3(0, 40f, 0);           // shift up
         siblingIndex = transform.GetSiblingIndex();         // save sibling index
         transform.SetAsLastSibling();                       // move to front
     }
@@ -116,8 +117,9 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
     public void OnPointerExit(PointerEventData pointerEventData)
     {
         //Output the following message with the GameObject's name
-        Debug.Log("Cursor Exiting " + name + " GameObject");
+        //Debug.Log("Cursor Exiting " + name + " GameObject");
         transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);   // scale down
+        transform.position -= new Vector3(0, 40f, 0);           // shift up
         transform.SetSiblingIndex(siblingIndex);            // restore sibling index
     }
 
