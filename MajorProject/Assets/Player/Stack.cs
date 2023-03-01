@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
-public class Stack : MonoBehaviour, IPunObservable
+public class Stack : MonoBehaviour, IPunObservable, IPointerDownHandler
 {
     public List<GameObject> cards;
     
@@ -17,6 +18,8 @@ public class Stack : MonoBehaviour, IPunObservable
     public GameObject lifeText;     // Reference to the player's life text
     public TextMeshProUGUI nameText;    // Reference to the player's name text
     public Transform canvasTransform;   // Reference to this stack's Canvas
+    
+    private bool displayingCards = false;
 
     #region Photon
     
@@ -362,6 +365,36 @@ public class Stack : MonoBehaviour, IPunObservable
     void Update()
     {
         lifeText.GetComponent<TextMeshProUGUI>().text = owner.life.ToString();
+    }
+    
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        Debug.Log("Player " + PhotonNetwork.LocalPlayer.NickName + " clicked on the stack");
+        displayingCards = !displayingCards;
+        if (displayingCards)
+        {
+            // Display the cards
+            Vector3 shiftDistance = new Vector3(220f, 0, 0);
+            int halfCount = cards.Count / 2;
+            for (int i = 0; i < cards.Count; i++)
+            {
+                shiftDistance *= (i - halfCount);
+                // If the number of cards is even, shift them all to the right
+                if (cards.Count % 2 == 0)
+                {
+                    shiftDistance += (shiftDistance / 2);
+                }
+                cards[i].transform.position += shiftDistance;
+            }
+        }
+        else
+        {
+            // Hide the cards
+            for (int i = 0; i < cards.Count; i++)
+            {
+                cards[i].GetComponent<Interactable>().ReturnHome();
+            }
+        }
     }
 
     #endregion

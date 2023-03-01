@@ -5,7 +5,7 @@ using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
-public class Card : MonoBehaviour, IPunObservable
+public class Card : MonoBehaviour
 {
     [Header("Card Details")]
     public string cardName;
@@ -20,23 +20,6 @@ public class Card : MonoBehaviour, IPunObservable
     // PhotonView ID of the stack that this card belongs to, 0 if not on a stack
     public int stackID = 0;
 
-    //TODO: REMOVE THIS AND IPUNOBSERVABLE?
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        // if (stream.IsWriting)
-        // {
-        //     // We own this instance: send the others our data
-        //     stream.SendNext(owner.GetComponent<PhotonView>().ViewID);
-        // }
-        // else
-        // {
-        //     // Networked instance, receive data
-        //     int ownerID = (Int32) stream.ReceiveNext();
-        //     owner = PhotonView.Find(ownerID).gameObject;
-        //     if (stackID)
-        // }
-    }
-    
     public void AddEffect(Stack stack)
     {
         // Remove spaces from the card name to make it a valid function name

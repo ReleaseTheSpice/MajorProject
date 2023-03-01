@@ -8,7 +8,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEditor;
 
-public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+public class Interactable : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler,
+    IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
     [SerializeField] private Canvas canvas;
     private RectTransform rectTransform;
@@ -19,6 +20,9 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     public bool draggable = false;
     // Set to true when it is the current player's turn, and they can play cards
     public bool myTurn = false;
+    
+    // Index of the card ordered in heirarchy
+    private int siblingIndex;
     
     private void Awake()
     {
@@ -67,6 +71,7 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     {
         Debug.Log(gameObject.name + " Dropped on " + eventData.pointerCurrentRaycast.gameObject.name);
         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(eventData.position), Vector2.zero);
+        // Only perform the drop action if the card was in the player's hand
         if (gameObject.GetComponentInParent<Hand>() != null)
         {
             if (hit.collider != null && hit.collider.gameObject.CompareTag("DropZone"))
@@ -95,6 +100,25 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
                 ReturnHome();
             }
         }
+    }
+
+    //Detect if the Cursor starts to pass over the GameObject
+    public void OnPointerEnter(PointerEventData pointerEventData)
+    {
+        //Output to console the GameObject's name and the following message
+        Debug.Log("Cursor Entering " + name + " GameObject");
+        transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);   // scale up
+        siblingIndex = transform.GetSiblingIndex();         // save sibling index
+        transform.SetAsLastSibling();                       // move to front
+    }
+
+    //Detect when Cursor leaves the GameObject
+    public void OnPointerExit(PointerEventData pointerEventData)
+    {
+        //Output the following message with the GameObject's name
+        Debug.Log("Cursor Exiting " + name + " GameObject");
+        transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);   // scale down
+        transform.SetSiblingIndex(siblingIndex);            // restore sibling index
     }
 
     #endregion
