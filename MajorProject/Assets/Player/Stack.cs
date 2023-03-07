@@ -68,6 +68,7 @@ public class Stack : MonoBehaviour, IPunObservable
     private bool lostLifeThisRound = false;
     private bool gainedLifeThisRound = false;
     private bool drawnCardsThisRound = false;
+    private int bonusDamage = 0;
 
     // Resolve the effects of all cards on the stack, most recent first, and return them to their original owners
     public void ResolveEffects()
@@ -76,7 +77,7 @@ public class Stack : MonoBehaviour, IPunObservable
         // Error checking
         if (cardEffects.Count == 0)
         {
-            Debug.LogError("No effects to resolve");
+            Debug.LogWarning("No effects to resolve");
             return;
         }
         if (cardEffects.Count != cards.Count)
@@ -106,25 +107,25 @@ public class Stack : MonoBehaviour, IPunObservable
             GameObject originalOwner = cards[i].GetComponent<Card>().owner;
             
             // Only return a card to a deck if this is the client with access to that deck (or hand)
-            if (originalOwner.GetComponent<Player>().myDeck != null)
+            // Or if the card is supposed to go to a hand, then the owner of that hand will run this
+            if (originalOwner.GetComponent<Player>().myDeck != null || goToHand)
             {
-                Deck originalDeck = originalOwner.GetComponent<Player>().myDeck.GetComponent<Deck>();
-                GameObject newCard = originalDeck.InstantiateNewCard(cards[i]);
                 
                 if (goToHand) // Some cards will go to a hand instead of returning to a deck after played
                 {
                     goToHand = false;
+                    Deck localDeck = owner.myDeck.GetComponent<Deck>();
+                    GameObject newCard = localDeck.InstantiateNewCard(cards[i]);
                     owner.myHand.GetComponent<Hand>().AddCard(newCard);
                 }
                 else
                 {
+                    Deck originalDeck = originalOwner.GetComponent<Player>().myDeck.GetComponent<Deck>();
+                    GameObject newCard = originalDeck.InstantiateNewCard(cards[i]);
                     // Call AddCard on the owner's deck
                     originalDeck.AddCard(newCard);
                 }
             }
-            // Destroy the card
-            //PhotonNetwork.Destroy(cards[i]);
-            
             // Photon RPC to the original owner to destroy the card
             GameManager.NetworkManager.PV.RPC("DestroyCard", 
                 originalOwner.GetComponent<PhotonView>().Owner, 
@@ -137,12 +138,25 @@ public class Stack : MonoBehaviour, IPunObservable
         // Clear the stack on all clients
         GameManager.NetworkManager.PV.RPC("ClearStack", RpcTarget.All,
             GetComponent<PhotonView>().ViewID);
+        
+        // Final cleanup
+        ResetVariables();
     }
 
     // Reset all card effect variables to their default values
     private void ResetVariables()
     {
         counterNextCard = false;
+        counterAllCards = false;
+        stabilizeLife = false;
+        lifeDoubler = false;
+        damageDoubler = false;
+        goToHand = false;
+        preventCardDraw = false;
+        lostLifeThisRound = false;
+        gainedLifeThisRound = false;
+        drawnCardsThisRound = false;
+        bonusDamage = 0;
     }
 
     #endregion
@@ -194,7 +208,7 @@ public class Stack : MonoBehaviour, IPunObservable
     // Card ID: 6
     public void Scavenge()
     {
-        Debug.Log("Stabilize effect");
+        Debug.Log("Scavenge effect");
         DrawCards(2);
     }
     
@@ -258,7 +272,7 @@ public class Stack : MonoBehaviour, IPunObservable
     }
     
     // Card ID: 15
-    public void FallenTree()
+    public void Steal()
     {
         // If you've drawn cards this round, lose 7 life
         if (drawnCardsThisRound)
@@ -278,13 +292,19 @@ public class Stack : MonoBehaviour, IPunObservable
     public void SwiftEnd()
     {
         // If you have the end card, increase life lose this round by 3
-        //TODO: NEED END CARD FUNCTIONALITY
+        if (owner.passedTurn)
+        {
+            bonusDamage += 3;
+        }
     }
     
     // Card ID: 24
-    public void SurpriseTrain()
+    public void ceab()
     {
-        counterAllCards = true;
+        if (!owner.passedTurn)
+        {
+            counterAllCards = true;
+        }
     }
     
     #endregion
@@ -323,6 +343,7 @@ public class Stack : MonoBehaviour, IPunObservable
                 amount *= 2;
                 damageDoubler = false;
             }
+            amount += bonusDamage;
             owner.life -= amount;
             lostLifeThisRound = true;
         }

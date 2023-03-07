@@ -23,6 +23,9 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
     
     // Index of the card ordered in heirarchy
     private int siblingIndex;
+
+    // True when the card is currently being dragged
+    private bool dragging = false;
     
     private void Awake()
     {
@@ -41,6 +44,13 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
     public void OnBeginDrag(PointerEventData eventData)
     {
         // Debug.Log("Begin Drag");
+        if (draggable && myTurn)
+        {
+            //siblingIndex = rectTransform.GetSiblingIndex();
+            // Set the sibling index to the highest so the card is on top of the others
+            rectTransform.SetSiblingIndex(100);
+            dragging = true;
+        }
     }
     
     // Fires when the player is dragging the object
@@ -56,10 +66,18 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
         }
     }
     
-    // Fires when the player stops dragging the object
+    // Fires when the player stops dragging the object (called after OnDrop, before OnPointerExit)
     public void OnEndDrag(PointerEventData eventData)
     {
         // Debug.Log("End Drag");
+        if (draggable && myTurn)
+        {
+            // Return the card to its original position
+            rectTransform.anchoredPosition3D = homePosition;
+            // Set the sibling index back to its original value
+            rectTransform.SetSiblingIndex(siblingIndex);
+            dragging = false;
+        }
     }
     
     public void OnPointerDown(PointerEventData eventData)
@@ -69,7 +87,8 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
     
     public void OnDrop(PointerEventData eventData)
     {
-        Debug.Log(gameObject.name + " Dropped on " + eventData.pointerCurrentRaycast.gameObject.name);
+        // This is called first after a drag ends
+        //Debug.Log(gameObject.name + " Dropped on " + eventData.pointerCurrentRaycast.gameObject.name);
         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(eventData.position), Vector2.zero);
         // Only perform the drop action if the card was in the player's hand
         if (gameObject.GetComponentInParent<Hand>() != null)
@@ -96,8 +115,8 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
             }
             else
             {
-                // Debug.Log("Hit Nothing");
-                ReturnHome();
+                Debug.Log("Hit Nothing");
+                // ReturnHome();
             }
         }
     }
@@ -105,21 +124,30 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
     //Detect if the Cursor starts to pass over the GameObject
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
-        //Output to console the GameObject's name and the following message
-        //Debug.Log("Cursor Entering " + name + " GameObject");
+        // If the card is being dragged, it may have triggered this event by going behind something
+        // In this case do nothing
+        if (dragging)
+        {
+            return;
+        }
         transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);   // scale up
         transform.position += new Vector3(0, 40f, 0);           // shift up
         siblingIndex = transform.GetSiblingIndex();         // save sibling index
         transform.SetAsLastSibling();                       // move to front
     }
 
-    //Detect when Cursor leaves the GameObject
+    //Detect when Cursor leaves the GameObject (called last on drag)
     public void OnPointerExit(PointerEventData pointerEventData)
     {
-        //Output the following message with the GameObject's name
-        //Debug.Log("Cursor Exiting " + name + " GameObject");
+        // If the card is being dragged, it may have triggered this event by going behind something
+        // In this case do nothing
+        if (dragging)
+        {
+            return;
+        }
+        // Debug.Log("Cursor Exiting " + name + " GameObject");
         transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);   // scale down
-        transform.position -= new Vector3(0, 40f, 0);           // shift up
+        ReturnHome(); // Return to home position (shift down)
         transform.SetSiblingIndex(siblingIndex);            // restore sibling index
     }
 

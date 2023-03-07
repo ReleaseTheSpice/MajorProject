@@ -281,7 +281,7 @@ GameObject:
   - component: {fileID: 9074228665848145559}
   - component: {fileID: 8244994059922414477}
   m_Layer: 5
-  m_Name: GoodBerries
+  m_Name: Embolden
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,7 +337,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 837d9aff9a928fc448b6636975a21a49, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f9e548dfca8dcfd4689a5896e19f6b32, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -375,9 +375,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f9fae728282d3847b6adad26aa1095e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardName: Good Berries
-  cardID: 9
-  cardDescription: Gain 1 life, add this card to your hand.
+  cardName: Embolden
+  cardID: 19
+  cardDescription: "If you haven\u2019t lost life this round, gain 10 life."
   owner: {fileID: 0}
   cardNameText: {fileID: 7543406616933242841}
   cardDescriptionText: {fileID: 7543406614969589994}

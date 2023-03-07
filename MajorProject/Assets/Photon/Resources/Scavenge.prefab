@@ -377,7 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Scavenge
   cardID: 6
-  cardDescription: Draw a card
+  cardDescription: Draw a card.
   owner: {fileID: 0}
   cardNameText: {fileID: 7543406616933242841}
   cardDescriptionText: {fileID: 7543406614969589994}
@@ -401,7 +401,6 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 7543406616448813506}
   - {fileID: 8244994059922414477}
   sceneViewId: 0
   InstantiationId: 0

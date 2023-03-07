@@ -125,11 +125,21 @@ public class NetworkManager : MonoBehaviour, IOnEventCallback
     }
 
     [PunRPC]
-    public void ResolveStacks()
+    public void NextRound()
     {
+        // Resolve all stacks, reset passed turns, draw cards
         // Get each client to resolve their stacks
         GameObject stack = LocalPlayer.GetComponent<Player>().myStack;
         stack.GetComponent<Stack>().ResolveEffects();
+        // Clear stack glow (WHY DOESNT THIS WORK)
+        stack.transform.GetChild(0).gameObject.SetActive(false);
+        
+        // Reset passed turns
+        LocalPlayer.GetComponent<Player>().passedTurn = false;
+        
+        // Draw cards
+        GameObject deck = LocalPlayer.GetComponent<Player>().myDeck;
+        deck.GetComponent<Deck>().DrawCard(2);
     }
 
     [PunRPC]

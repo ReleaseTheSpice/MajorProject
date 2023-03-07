@@ -67,7 +67,22 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
             }
             
             //TODO: Revisit this method if deck creation becomes a feature
-            List<int> deckCode = new List<int>(){ 0, 1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 3 };
+            List<int> deckCode = new List<int>()
+            {
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
+            };
+            
+            // Shuffle the deck
+            int n = deckCode.Count;  
+            while (n > 1) {  
+                n--;  
+                int k = UnityEngine.Random.Range(0, n + 1);  
+                int value = deckCode[k];  
+                deckCode[k] = deckCode[n];  
+                deckCode[n] = value;  
+            }
+            
+            // Generate the deck
             myDeck.GetComponent<Deck>().GenerateDeck(deckCode);
             
             // Draw starting hand
@@ -144,17 +159,13 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
         {
             if (passedTurn)
             {
-                // Resolve all effects
-                GameManager.NetworkManager.PV.RPC("ResolveStacks", RpcTarget.All);
+                // Resolve all effects 
+                GameManager.NetworkManager.PV.RPC("NextRound", RpcTarget.All);
                 GameManager.NetworkManager.PV.RPC(
                     "UpdateStackGlow", 
                     RpcTarget.All, 
                     myStack.GetComponent<PhotonView>().ViewID, 
                     0);
-                passedTurn = false;
-                
-                // Draw cards
-                myDeck.GetComponent<Deck>().DrawCard(2);
             }
 
             Debug.Log(PhotonNetwork.NickName + " starting turn");

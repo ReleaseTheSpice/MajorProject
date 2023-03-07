@@ -34,6 +34,10 @@ public class Card : MonoBehaviour
     void Start()
     {
         cardNameText.GetComponent<TextMeshProUGUI>().text = cardName;
+        if (cardName == "ceab")
+        {
+            cardNameText.GetComponent<TextMeshProUGUI>().text = "□ceab!";
+        }
         cardDescriptionText.GetComponent<TextMeshProUGUI>().text = cardDescription;
     }
 
