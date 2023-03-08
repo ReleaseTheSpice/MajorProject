@@ -6,7 +6,7 @@ using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
-public class Stack : MonoBehaviour, IPunObservable
+public class Stack : MonoBehaviour
 {
     public List<GameObject> cards;
     
@@ -22,21 +22,6 @@ public class Stack : MonoBehaviour, IPunObservable
     private bool displayingCards = false;
 
     #region Photon
-    
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        // if (stream.IsWriting)
-        // {
-        //     // We own this instance: send the others our data
-        //     stream.SendNext(owner.GetComponent<PhotonView>().ViewID);
-        // }
-        // else
-        // {
-        //     // Networked instance, receive data
-        //     int ownerID = (Int32) stream.ReceiveNext();
-        //     owner = PhotonView.Find(ownerID).gameObject.GetComponent<Player>();
-        // }
-    }
 
     #endregion
     
@@ -166,49 +151,42 @@ public class Stack : MonoBehaviour, IPunObservable
     // Card ID: 0
     public void Maul()
     {
-        Debug.Log("Maul effect");
         LoseLife(4);
     }
     
     // Card ID: 1
     public void Heal()
     {
-        Debug.Log("Heal effect");
         GainLife(4);
     }
     
     // Card ID: 2
     public void Nope()
     {
-        Debug.Log("Counter next card");
         counterNextCard = true;
     }
     
     // Card ID: 3
     public void Hibernate()
     {
-        Debug.Log("Hibernate effect");
         lifeDoubler = true;
     }
     
     // Card ID: 4
     public void BearMarket()
     {
-        Debug.Log("Bear Market effect");
         damageDoubler = true;
     }
     
     // Card ID: 5
     public void Stabilize()
     {
-        Debug.Log("Stabilize effect");
         stabilizeLife = true;
     }
     
     // Card ID: 6
     public void Scavenge()
     {
-        Debug.Log("Scavenge effect");
         DrawCards(2);
     }
     
@@ -243,7 +221,7 @@ public class Stack : MonoBehaviour, IPunObservable
     public void Wither()
     {
         DrawCards(2);
-        int cardsInHand = owner.GetComponent<Hand>().cards.Count;
+        int cardsInHand = owner.myHand.GetComponent<Hand>().cards.Count;
         LoseLife(cardsInHand);
     }
     
@@ -285,22 +263,83 @@ public class Stack : MonoBehaviour, IPunObservable
     public void BigHands()
     {
         // Gain 1 life for each card in your hand
-        GainLife(owner.GetComponent<Hand>().cards.Count + 1);
+        GainLife(owner.myHand.GetComponent<Hand>().cards.Count + 1);
     }
     
     // Card ID: 17
     public void SwiftEnd()
     {
-        // If you have the end card, increase life lose this round by 3
+        // If you passed your turn, increase life lose this round by 3
         if (owner.passedTurn)
         {
             bonusDamage += 3;
         }
     }
     
+    // Card ID: 18
+    public void Regroup()
+    {
+        // If you have lost life this round, draw 3 cards.
+        if (lostLifeThisRound)
+        {
+            DrawCards(3);
+        }
+    }
+    
+    // Card ID: 19
+    public void Embolden()
+    {
+        // If you haven’t lost life this round, gain 10 life.
+        if (!lostLifeThisRound)
+        {
+            GainLife(10);
+        }
+    }
+    
+    // Card ID: 20
+    public void Trap()
+    {
+        // If you haven’t lost life this round, lose 7 life.
+        if (!lostLifeThisRound)
+        {
+            LoseLife(7);
+        }
+    }
+    
+    // Card ID: 21
+    public void Punish()
+    {
+        // If you passed your turn, lose 10 life.
+        if (owner.passedTurn)
+        {
+            LoseLife(10);
+        }
+    }
+    
+    // Card ID: 22
+    public void Burn()
+    {
+        // If you have lost life this round, lose 10 life.
+        if (lostLifeThisRound)
+        {
+            LoseLife(10);
+        }
+    }
+    
+    // Card ID: 23
+    public void GoToSpace()
+    {
+        // If you have lost life this round, gain 7 life.
+        if (lostLifeThisRound)
+        {
+            GainLife(7);
+        }
+    }
+
     // Card ID: 24
     public void ceab()
     {
+        // If you didn’t pass your turn, negate all cards in this stack.
         if (!owner.passedTurn)
         {
             counterAllCards = true;

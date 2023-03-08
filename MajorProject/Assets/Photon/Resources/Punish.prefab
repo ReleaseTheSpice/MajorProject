@@ -377,7 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Punish
   cardID: 21
-  cardDescription: If you have an end card, lose 10 life.
+  cardDescription: 'If you passed your turn, lose 10 life. '
   owner: {fileID: 0}
   cardNameText: {fileID: 7543406616933242841}
   cardDescriptionText: {fileID: 7543406614969589994}

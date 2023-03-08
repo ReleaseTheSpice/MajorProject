@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Card Text
+  m_text: If you lost life this round, gain 7 life.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -377,7 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Go To Space
   cardID: 23
-  cardDescription: If you have lost life this round, gain 7 life.
+  cardDescription: If you lost life this round, gain 7 life.
   owner: {fileID: 0}
   cardNameText: {fileID: 7543406616933242841}
   cardDescriptionText: {fileID: 7543406614969589994}
