@@ -131,7 +131,7 @@ public class Interactable : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
             return;
         }
         transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);   // scale up
-        transform.position += new Vector3(0, 40f, 0);           // shift up
+        transform.position += new Vector3(0, 50f, 0);           // shift up
         siblingIndex = transform.GetSiblingIndex();         // save sibling index
         transform.SetAsLastSibling();                       // move to front
     }
