@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Photon.Pun;
 
-public class Deck : MonoBehaviour, IPointerDownHandler
+public class Deck : MonoBehaviour
 {
     public List<GameObject> cards;
 
@@ -23,8 +23,6 @@ public class Deck : MonoBehaviour, IPointerDownHandler
         card.transform.SetParent(transform);
         card.GetComponent<Interactable>().homePosition = Vector3.zero;
         card.GetComponent<Interactable>().ReturnHome();
-        // Shift the card to z=1 so it is behind the deck
-        // card.transform.position = new Vector3(card.transform.position.x, card.transform.position.y, -1);
     }
     
     // Remove a card from the top of the deck and add it to the hand
@@ -46,12 +44,6 @@ public class Deck : MonoBehaviour, IPointerDownHandler
     
     #region Callback Handlers
 
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        Debug.Log("OnPointerDown");
-        DrawCard(1);
-    }
-    
     // Start is called before the first frame update
     void Start()
     {
