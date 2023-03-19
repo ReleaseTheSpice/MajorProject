@@ -57,7 +57,9 @@ public class Deck : MonoBehaviour
     }
 
     #endregion
-    
+
+    #region Public Methods
+
     public void GenerateDeck(List<int> cardIds)
     {
         foreach (int cardId in cardIds)
@@ -83,4 +85,12 @@ public class Deck : MonoBehaviour
         newCard.GetComponent<Interactable>().updateCanvas(GetComponentInParent<Canvas>());
         return newCard;
     }
+    
+    public void LeaveGame()
+    {
+        Debug.Log(PhotonNetwork.NickName + "Leaving game");
+        GameManager.Instance.LeaveRoom();
+    }
+    
+    #endregion
 }
