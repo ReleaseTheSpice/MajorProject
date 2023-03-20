@@ -117,6 +117,9 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
         if (life <= 0)
         {
             Debug.Log(PhotonNetwork.NickName + "Lost!");
+            // Check for winner
+            GameManager.NetworkManager.PV.RPC("CheckForWinner", RpcTarget.All);
+            
             // TODO: Add a "you lost" screen
             GameManager.Instance.LeaveRoom();
         }

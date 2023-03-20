@@ -156,6 +156,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         // Make the local player leave the Photon Network room
         PhotonNetwork.LeaveRoom();
+        PhotonNetwork.LoadLevel("Launcher");
+        
+        // Destroy the things that have DontDestroyOnLoad
+        //TODO: THIS DOES NOT WORK
+        PhotonNetwork.Destroy(GameObject.Find("PlayerCanvas(Clone)"));
+        Destroy(gameObject);
+        // Then finally disconnect?
+        PhotonNetwork.Disconnect();
     }
 
     #endregion

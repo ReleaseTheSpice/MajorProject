@@ -88,7 +88,7 @@ public class Deck : MonoBehaviour
     
     public void LeaveGame()
     {
-        Debug.Log(PhotonNetwork.NickName + "Leaving game");
+        Debug.Log(PhotonNetwork.NickName + " Leaving game");
         GameManager.Instance.LeaveRoom();
     }
     

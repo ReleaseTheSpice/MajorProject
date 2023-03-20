@@ -167,6 +167,26 @@ public class NetworkManager : MonoBehaviour, IOnEventCallback
         // Find a card with given Photon ID and destroy it on all clients
         PhotonNetwork.Destroy(PhotonView.Find(cardViewID).gameObject);
     }
+    
+    [PunRPC]
+    public void CheckForWinner()
+    {
+        // Check if the lobby size is 1, if so show the popup and destroy the game
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+        {
+            // Show popup
+            GameObject popup = GameObject.Find("YouWin");
+            popup.SetActive(true);
+            // Destroy the game
+            StartCoroutine(DelayedDestroy(5));
+        }
+    }
+    
+    IEnumerator DelayedDestroy(int seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        PhotonNetwork.DestroyAll();
+    }
 
     #endregion
 }
