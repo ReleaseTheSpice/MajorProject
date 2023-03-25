@@ -18,8 +18,12 @@ public class Launcher : MonoBehaviourPunCallbacks
     [Tooltip("The UI Button to cancel the connection progress")]
     [SerializeField]
     private GameObject cancelButton;
+    
 
     #endregion
+    
+    [HideInInspector]
+    public byte maxPlayersPerRoom = 4;
     
     #region Private Fields
     
@@ -54,19 +58,6 @@ public class Launcher : MonoBehaviourPunCallbacks
         controlPanel.SetActive(true);
         cancelButton.SetActive(false);
     }
-
-    // private void Update()
-    // {
-    //     // If we are connected to a room but waiting for players, keep checking if we have enough
-    //     if (waitingForPlayers)
-    //     {
-    //         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
-    //         {
-    //             PhotonNetwork.LoadLevel("Room for 2");
-    //             waitingForPlayers = false;
-    //         }
-    //     }
-    // }
 
     #endregion
     
@@ -144,7 +135,7 @@ public class Launcher : MonoBehaviourPunCallbacks
                   "No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
     
         // #Critical: we failed to join a random room, maybe none exists or they are all full. No worries, we create a new room.
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 4 });
+        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = maxPlayersPerRoom });
     }
 
     public override void OnJoinedRoom()
@@ -157,7 +148,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             //TODO: then wait for that many players to join before loading the room
 
             // #Critical - Load the Room Level.
-            PhotonNetwork.LoadLevel("Room for 2");
+            PhotonNetwork.LoadLevel("Game");
         }
         // else
         // {

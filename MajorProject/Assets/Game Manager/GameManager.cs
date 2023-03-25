@@ -37,7 +37,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        SceneManager.LoadScene(0);
+        // THIS IS NOT BEING CALLED
+        Debug.Log("OnLeftRoom()");
+        SceneManager.LoadScene("Launcher");
     }
     
     public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
@@ -154,16 +156,20 @@ public class GameManager : MonoBehaviourPunCallbacks
     // Wrapping the photon LeaveRoom in a public method for abstraction
     public void LeaveRoom()
     {
+        Debug.Log("LEAVING ROOM");
         // Make the local player leave the Photon Network room
         PhotonNetwork.LeaveRoom();
-        PhotonNetwork.LoadLevel("Launcher");
         
-        // Destroy the things that have DontDestroyOnLoad
         //TODO: THIS DOES NOT WORK
-        PhotonNetwork.Destroy(GameObject.Find("PlayerCanvas(Clone)"));
-        Destroy(gameObject);
         // Then finally disconnect?
         PhotonNetwork.Disconnect();
+        
+        // Then load the lobby scene again?
+        SceneManager.LoadScene("Launcher");
+        
+        // Destroy the things that have DontDestroyOnLoad
+        PhotonNetwork.Destroy(GameObject.Find("PlayerCanvas(Clone)"));
+        Destroy(gameObject);
     }
 
     #endregion
@@ -178,8 +184,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
         Debug.LogFormat("PhotonNetwork: Loading Level: {0}", PhotonNetwork.CurrentRoom.PlayerCount);
-        //PhotonNetwork.LoadLevel("Room for " + PhotonNetwork.CurrentRoom.PlayerCount);
-        PhotonNetwork.LoadLevel("Room for 2");
+        PhotonNetwork.LoadLevel("Game");
     }
 
     private Vector3 GetNewStackPosition(int ID)
