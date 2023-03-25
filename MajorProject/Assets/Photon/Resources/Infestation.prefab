@@ -376,7 +376,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Infestation
   cardID: 13
-  cardDescription: Lose 1 life for each card played on this stack this round.
+  cardDescription: Lose 1 life for each card on this stack.
   owner: {fileID: 0}
   cardNameText: {fileID: 7543406616933242841}
   cardDescriptionText: {fileID: 7543406614969589994}
@@ -399,8 +399,7 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents:
-  - {fileID: 0}
+  ObservedComponents: []
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
