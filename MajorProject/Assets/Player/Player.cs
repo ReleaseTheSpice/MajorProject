@@ -163,6 +163,7 @@ public class Player : MonoBehaviour, IPunInstantiateMagicCallback
         {
             if (passedTurn)
             {
+                // End the round
                 // Resolve all effects 
                 GameManager.NetworkManager.PV.RPC("NextRound", RpcTarget.All);
                 GameManager.NetworkManager.PV.RPC(

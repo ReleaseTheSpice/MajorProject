@@ -397,6 +397,7 @@ public class Stack : MonoBehaviour
         else
         {
             owner.myDeck.GetComponent<Deck>().DrawCard(amount);
+            drawnCardsThisRound = true;
         }
     }
 

@@ -376,7 +376,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Burn
   cardID: 22
-  cardDescription: If you have lost life this round, lose 10 life.
+  cardDescription: If you lost life this round, lose 10 life.
   owner: {fileID: 0}
   cardNameText: {fileID: 7543406616933242841}
   cardDescriptionText: {fileID: 7543406614969589994}
@@ -399,8 +399,7 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents:
-  - {fileID: 0}
+  ObservedComponents: []
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
